@@ -1,20 +1,31 @@
 @import '../../styles/variables.scss';
 
 .form {
-  border: 1px solid rgba($gray, 0.4);
-  border-radius: 5px;
-  margin: 0 auto;
-  padding: 30px;
+  padding-top: 50px;
+  margin-bottom: 30px;
   display: flex;
   flex-direction: column;
-  max-width: 420px;
+
+  @media screen and (min-width: 767px) {
+    flex-direction: row;
+    max-width: 700px;
+    margin: 0 auto 80px;
+    justify-content: space-between;
+  }
 }
 
 .input {
   border: 1px solid rgba($gray, 0.4);
   border-radius: 5px;
   padding: 15px;
-  margin-bottom: 30px;
+
+  @media screen and (max-width: 767px) {
+    margin-bottom: 30px;
+  }
+
+  @media screen and (min-width: 767px) {
+    width: calc(100% - 165px);
+  }
 }
 
 .btn {
@@ -24,7 +35,7 @@
   border-radius: 5px;
   color: $white;
   background-color: $blue;
-  border-color: $blue;
+  border: none;
   text-align: center;
   display: inline-block;
   padding: 0.675rem 1.4rem;

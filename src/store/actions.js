@@ -11,12 +11,12 @@ const getReposStarted = () => {
   };
 };
 
-const getReposSuccess = users => {
+const getReposSuccess = repos => {
   return {
     type: GET_REPOS_SUCCESS,
     loading: false,
     error: null,
-    users,
+    repos,
   };
 };
 
@@ -27,11 +27,13 @@ const getReposError = error => {
   };
 };
 
-export const FetchRepos = user => {
+export const FetchRepos = repository => {
   return dispatch => {
     dispatch(getReposStarted());
 
-    fetch(`https://api.github.com/search/users?q=${user}`).then(response => {
+    fetch(
+      `https://api.github.com/search/repositories?q=${repository}?&per_page=8`,
+    ).then(response => {
       if (response.ok) {
         response.json().then(response => {
           dispatch(getReposSuccess(response.items));
