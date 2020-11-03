@@ -1,0 +1,26 @@
+@import '../../styles/variables.scss';
+
+header {
+  padding: 15px 0;
+  border-bottom: 1px solid rgba($gray, 0.4);
+  background-color: rgba($gray, 0.1);
+}
+
+.headerLink {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.logo {
+  width: 50px;
+  vertical-align: middle;
+}
+
+.projectTitle {
+  text-transform: uppercase;
+  font-family: 'Balsamiq Sans', cursive;
+  color: $black;
+  padding-top: 3px;
+  position: relative;
+  top: 2px;
+}

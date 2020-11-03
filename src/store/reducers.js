@@ -4,14 +4,21 @@ import {
   GET_REPOS_ERROR,
 } from './constants';
 
-const STATE = {
+const initialState = {
   loading: false,
-  users: [],
   sessions: [],
   error: null,
 };
 
-const repos = (state = STATE, action) => {
+const sessionCreator = (sessions, newSession) => {
+  if (sessions.length >= 5) {
+    return [...sessions.slice(1), newSession];
+  }
+
+  return [...sessions, newSession];
+};
+
+const repos = (state = initialState, action) => {
   switch (action.type) {
     case GET_REPOS_STARTED:
       return {
@@ -22,8 +29,7 @@ const repos = (state = STATE, action) => {
     case GET_REPOS_SUCCESS:
       return {
         ...state,
-        users: action.users,
-        sessions: [...state.sessions, action.users],
+        sessions: sessionCreator([...state.sessions], action.repos),
         loading: action.loading,
       };
 
@@ -32,6 +38,9 @@ const repos = (state = STATE, action) => {
         ...state,
         error: action.error,
       };
+
+    default:
+      return state;
   }
 };
 
