@@ -10,12 +10,17 @@ const initialState = {
   error: null,
 };
 
-const sessionCreator = (sessions, newSession) => {
+const sessionCreator = (sessions, newSession, request) => {
   if (sessions.length >= 5) {
-    return [...sessions.slice(1), newSession];
+    const sessionsUpdated = [
+      ...sessions.slice(1),
+      { request, data: newSession },
+    ];
+    return sessionsUpdated.reverse();
   }
 
-  return [...sessions, newSession];
+  const sessionsUpdated = [...sessions, { request, data: newSession }];
+  return sessionsUpdated.reverse();
 };
 
 const repos = (state = initialState, action) => {
@@ -29,7 +34,11 @@ const repos = (state = initialState, action) => {
     case GET_REPOS_SUCCESS:
       return {
         ...state,
-        sessions: sessionCreator([...state.sessions], action.repos),
+        sessions: sessionCreator(
+          [...state.sessions],
+          action.repos,
+          action.request,
+        ),
         loading: action.loading,
       };
 

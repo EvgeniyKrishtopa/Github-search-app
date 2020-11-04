@@ -11,12 +11,13 @@ const getReposStarted = () => {
   };
 };
 
-const getReposSuccess = repos => {
+const getReposSuccess = (response, repository) => {
   return {
     type: GET_REPOS_SUCCESS,
     loading: false,
     error: null,
-    repos,
+    request: repository,
+    repos: response,
   };
 };
 
@@ -36,7 +37,7 @@ export const FetchRepos = repository => {
     ).then(response => {
       if (response.ok) {
         response.json().then(response => {
-          dispatch(getReposSuccess(response.items));
+          dispatch(getReposSuccess(response.items, repository));
         });
       } else {
         dispatch(getReposError(response.statusText));

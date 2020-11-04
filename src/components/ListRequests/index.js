@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import AccordionItem from 'components/AccordionItem';
+import styles from './styles.module.scss';
 
 const ListRequests = () => {
   const [currentSessions, setCurrentSessions] = useState([]);
@@ -14,15 +16,25 @@ const ListRequests = () => {
 
   useEffect(() => {
     const sessions = JSON.parse(localStorage.getItem('sessions'));
-    setCurrentSessions(sessions);
+    if (sessions) {
+      setCurrentSessions(sessions);
+    }
   }, []);
 
   return (
-    <ul>
-      {currentSessions.map((item, index) => (
-        <li key={index}>{index}</li>
-      ))}
-    </ul>
+    <>
+      {currentSessions.length > 0 && (
+        <h2 className="text-center">Requests History</h2>
+      )}
+      <ul className={styles.accordion}>
+        {currentSessions.length > 0 &&
+          currentSessions.map(({ request, data }) => (
+            <li key={request} className={styles.listItem}>
+              <AccordionItem request={request} data={data} />
+            </li>
+          ))}
+      </ul>
+    </>
   );
 };
 
