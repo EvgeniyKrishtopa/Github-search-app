@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import AccordionItem from 'components/AccordionItem';
+import { GetSessions } from '../../store/actions';
 import styles from './styles.module.scss';
 
 const ListRequests = () => {
   const [currentSessions, setCurrentSessions] = useState([]);
   const sessions = useSelector(({ repos }) => repos.sessions);
+  const dispatch = useDispatch();
+  //отверстать репозитории
+  //вывести поле ошибок при запросе
+  //оптимизация
+  //тайпскрипт
 
   useEffect(() => {
     if (sessions.length !== 0) {
@@ -17,9 +23,9 @@ const ListRequests = () => {
   useEffect(() => {
     const sessions = JSON.parse(localStorage.getItem('sessions'));
     if (sessions) {
-      setCurrentSessions(sessions);
+      dispatch(GetSessions(sessions));
     }
-  }, []);
+  }, [dispatch]);
 
   return (
     <>
@@ -28,9 +34,9 @@ const ListRequests = () => {
       )}
       <ul className={styles.accordion}>
         {currentSessions.length > 0 &&
-          currentSessions.map(({ request, data }) => (
+          currentSessions.map(({ request, data, opened }) => (
             <li key={request} className={styles.listItem}>
-              <AccordionItem request={request} data={data} />
+              <AccordionItem request={request} data={data} isOpen={opened} />
             </li>
           ))}
       </ul>

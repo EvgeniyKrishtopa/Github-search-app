@@ -2,6 +2,7 @@ import {
   GET_REPOS_STARTED,
   GET_REPOS_SUCCESS,
   GET_REPOS_ERROR,
+  GET_SESSIONS_FROM_LOCALSTORAGE,
 } from './constants';
 
 const getReposStarted = () => {
@@ -43,5 +44,12 @@ export const FetchRepos = repository => {
         dispatch(getReposError(response.statusText));
       }
     });
+  };
+};
+
+export const GetSessions = sessions => {
+  return {
+    type: GET_SESSIONS_FROM_LOCALSTORAGE,
+    sessions,
   };
 };

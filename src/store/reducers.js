@@ -2,6 +2,7 @@ import {
   GET_REPOS_STARTED,
   GET_REPOS_SUCCESS,
   GET_REPOS_ERROR,
+  GET_SESSIONS_FROM_LOCALSTORAGE,
 } from './constants';
 
 const initialState = {
@@ -12,15 +13,22 @@ const initialState = {
 
 const sessionCreator = (sessions, newSession, request) => {
   if (sessions.length >= 5) {
-    const sessionsUpdated = [
-      ...sessions.slice(1),
-      { request, data: newSession },
+    return [
+      { request, data: newSession, opened: true },
+      ...sessions.slice(0, 4).map(item => {
+        item.opened = false;
+        return item;
+      }),
     ];
-    return sessionsUpdated.reverse();
   }
 
-  const sessionsUpdated = [...sessions, { request, data: newSession }];
-  return sessionsUpdated.reverse();
+  return [
+    { request, data: newSession, opened: true },
+    ...sessions.map(item => {
+      item.opened = false;
+      return item;
+    }),
+  ];
 };
 
 const repos = (state = initialState, action) => {
@@ -46,6 +54,12 @@ const repos = (state = initialState, action) => {
       return {
         ...state,
         error: action.error,
+      };
+
+    case GET_SESSIONS_FROM_LOCALSTORAGE:
+      return {
+        ...state,
+        sessions: action.sessions,
       };
 
     default:

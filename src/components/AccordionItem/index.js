@@ -1,8 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import styles from './styles.module.scss';
 
-const RequestItem = ({ request, data }) => {
+const RequestItem = ({ request, data, isOpen }) => {
   const [opened, setOpened] = useState(false);
+
+  useEffect(() => {
+    setOpened(isOpen);
+  }, [isOpen]);
+
   return (
     <div className={`${styles.accrodionItem} ${opened ? 'isOpen' : ''}`}>
       <div className={styles.accrodionItemHeader}>
