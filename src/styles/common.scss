@@ -8,6 +8,7 @@ body {
   font: normal 600 16px/2 'Roboto', sans-serif;
   color: rgba($black, 0.65);
   min-width: 320px;
+  background-color: rgba($gray, 0.1);
 }
 
 .container {
@@ -49,4 +50,8 @@ ul {
   padding: 0;
   margin: 0;
   list-style: none;
+}
+
+.warning {
+  color: $red;
 }
