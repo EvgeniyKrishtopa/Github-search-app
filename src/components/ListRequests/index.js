@@ -8,10 +8,6 @@ const ListRequests = () => {
   const [currentSessions, setCurrentSessions] = useState([]);
   const sessions = useSelector(({ repos }) => repos.sessions);
   const dispatch = useDispatch();
-  //отверстать репозитории
-  //вывести поле ошибок при запросе
-  //оптимизация
-  //тайпскрипт
 
   useEffect(() => {
     if (sessions.length !== 0) {

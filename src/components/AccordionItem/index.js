@@ -1,32 +1,36 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useDispatch } from 'react-redux';
+import { ChangeSessionOpenedStatus } from '../../store/actions';
+import Repository from '../Repository';
 import styles from './styles.module.scss';
 
 const RequestItem = ({ request, data, isOpen }) => {
-  const [opened, setOpened] = useState(false);
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    setOpened(isOpen);
-  }, [isOpen]);
+  const changeOpenStatus = () => {
+    dispatch(ChangeSessionOpenedStatus(request));
+  };
 
   return (
-    <div className={`${styles.accrodionItem} ${opened ? 'isOpen' : ''}`}>
+    <div className={`${styles.accrodionItem} ${isOpen ? 'isOpen' : ''}`}>
       <div className={styles.accrodionItemHeader}>
         <span>
           Request: <strong className={styles.requestTitle}>{request}</strong>
         </span>
-        <button
-          className={styles.iconItem}
-          onClick={() => setOpened(!opened)}
-        ></button>
+        <button className={styles.iconItem} onClick={changeOpenStatus}></button>
       </div>
       <div className={styles.accrodionItemBody}>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-        commodo consequat. Duis aute irure dolor in reprehenderit in voluptate
-        velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint
-        occaecat cupidatat non proident, sunt in culpa qui officia deserunt
-        mollit anim id est laborum.
+        <ul className={styles.repos}>
+          {data.length > 0 ? (
+            data.map(({ id, name, html_url }) => (
+              <li key={id}>
+                <Repository name={name} url={html_url} />
+              </li>
+            ))
+          ) : (
+            <p>This request does not have any repos!</p>
+          )}
+        </ul>
       </div>
     </div>
   );

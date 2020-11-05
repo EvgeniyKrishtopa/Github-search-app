@@ -19,12 +19,21 @@
 }
 
 .accrodionItemBody {
-  padding: 30px 0;
-  display: none;
+  visibility: hidden;
+  opacity: 0;
+  max-height: 0;
+  transition: all 0.4s ease-in-out;
+  background-color: rgba($blue-light, 0.3);
 }
 
 :global(.isOpen) .accrodionItemBody {
-  display: block;
+  visibility: visible;
+  opacity: 1;
+  max-height: 100vh;
+  padding: 15px 20px;
+  border: 1px solid rgba($gray, 0.2);
+  border-radius: 6px;
+  margin-top: 10px;
 }
 
 .iconItem {
@@ -42,4 +51,10 @@
 
 :global(.isOpen) .iconItem {
   transform: rotate(180deg);
+}
+
+.repos {
+  @media screen and (min-width: 480px) {
+    column-count: 2;
+  }
 }

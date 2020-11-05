@@ -3,6 +3,7 @@ import {
   GET_REPOS_SUCCESS,
   GET_REPOS_ERROR,
   GET_SESSIONS_FROM_LOCALSTORAGE,
+  CHANGE_SESSION_OPENED_STATUS,
 } from './constants';
 
 const initialState = {
@@ -26,6 +27,20 @@ const sessionCreator = (sessions, newSession, request) => {
     { request, data: newSession, opened: true },
     ...sessions.map(item => {
       item.opened = false;
+      return item;
+    }),
+  ];
+};
+
+const sessionActiveHandler = (sessions, activeItem) => {
+  return [
+    ...sessions.map(item => {
+      if (item.request === activeItem) {
+        item.opened = !item.opened;
+      } else {
+        item.opened = false;
+      }
+
       return item;
     }),
   ];
@@ -60,6 +75,12 @@ const repos = (state = initialState, action) => {
       return {
         ...state,
         sessions: action.sessions,
+      };
+
+    case CHANGE_SESSION_OPENED_STATUS:
+      return {
+        ...state,
+        sessions: sessionActiveHandler([...state.sessions], action.activeItem),
       };
 
     default:
