@@ -20,6 +20,7 @@ const getReposSuccess = (response, repository) => {
     error: null,
     request: repository,
     repos: response,
+    id: Date.now(),
   };
 };
 

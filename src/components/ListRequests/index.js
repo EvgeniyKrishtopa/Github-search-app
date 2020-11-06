@@ -2,11 +2,13 @@ import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import AccordionItem from 'components/AccordionItem';
 import { GetSessions } from '../../store/actions';
+import Loader from 'components/Loader';
 import styles from './styles.module.scss';
 
 const ListRequests = () => {
   const [currentSessions, setCurrentSessions] = useState([]);
   const sessions = useSelector(({ repos }) => repos.sessions);
+  const loading = useSelector(({ repos }) => repos.loading);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -28,14 +30,18 @@ const ListRequests = () => {
       {currentSessions.length > 0 && (
         <h2 className="text-center">Requests History</h2>
       )}
-      <ul className={styles.accordion}>
-        {currentSessions.length > 0 &&
-          currentSessions.map(({ request, data, opened }) => (
-            <li key={request} className={styles.listItem}>
-              <AccordionItem request={request} data={data} isOpen={opened} />
-            </li>
-          ))}
-      </ul>
+      {loading ? (
+        <Loader />
+      ) : (
+        <ul className={styles.accordion}>
+          {currentSessions.length > 0 &&
+            currentSessions.map(({ request, data, opened, id }) => (
+              <li key={id} className={styles.listItem}>
+                <AccordionItem request={request} data={data} isOpen={opened} />
+              </li>
+            ))}
+        </ul>
+      )}
     </>
   );
 };

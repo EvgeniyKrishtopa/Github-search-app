@@ -12,10 +12,10 @@ const initialState = {
   error: null,
 };
 
-const sessionCreator = (sessions, newSession, request) => {
+const sessionCreator = (sessions, newSession, request, id) => {
   if (sessions.length >= 5) {
     return [
-      { request, data: newSession, opened: true },
+      { request, data: newSession, opened: true, id },
       ...sessions.slice(0, 4).map(item => {
         item.opened = false;
         return item;
@@ -24,7 +24,7 @@ const sessionCreator = (sessions, newSession, request) => {
   }
 
   return [
-    { request, data: newSession, opened: true },
+    { request, data: newSession, opened: true, id },
     ...sessions.map(item => {
       item.opened = false;
       return item;
@@ -61,6 +61,7 @@ const repos = (state = initialState, action) => {
           [...state.sessions],
           action.repos,
           action.request,
+          action.id,
         ),
         loading: action.loading,
       };

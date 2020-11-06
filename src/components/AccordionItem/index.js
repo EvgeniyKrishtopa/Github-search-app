@@ -36,4 +36,4 @@ const RequestItem = ({ request, data, isOpen }) => {
   );
 };
 
-export default RequestItem;
+export default React.memo(RequestItem);
