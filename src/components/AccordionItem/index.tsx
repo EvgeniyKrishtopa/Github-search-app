@@ -1,18 +1,19 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { ChangeSessionOpenedStatus } from '../../store/actions';
-import Repository from '../Repository';
+import { ChangeSessionOpenedStatus } from 'store/actions/actions';
+import Repository from 'components/Repository';
 import styles from './styles.module.scss';
+import { ISession } from 'typings/interfaces';
 
-const RequestItem = ({ request, data, isOpen }) => {
+const RequestItem: React.FC<ISession> = ({ data, id, opened, request }) => {
   const dispatch = useDispatch();
 
   const changeOpenStatus = () => {
-    dispatch(ChangeSessionOpenedStatus(request));
+    dispatch(ChangeSessionOpenedStatus(id));
   };
 
   return (
-    <div className={`${styles.accrodionItem} ${isOpen ? 'isOpen' : ''}`}>
+    <div className={`${styles.accrodionItem} ${opened ? 'isOpen' : ''}`}>
       <div className={styles.accrodionItemHeader}>
         <span>
           Request: <strong className={styles.requestTitle}>{request}</strong>
