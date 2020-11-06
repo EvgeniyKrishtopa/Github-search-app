@@ -37,7 +37,7 @@ const getReposSuccess = (
 const getReposError = (error: string): ReposActionTypes => {
   return {
     type: GET_REPOS_ERROR,
-    error: error,
+    error,
   };
 };
 

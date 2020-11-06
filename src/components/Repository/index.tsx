@@ -1,7 +1,8 @@
 import React from 'react';
 import styles from './styles.module.scss';
+import { IRepository } from 'typings/interfaces';
 
-const Repository = ({ name, url }) => {
+const Repository: React.FC<IRepository> = ({ name, url }) => {
   return (
     <a href={url} className={styles.repoLink}>
       <svg

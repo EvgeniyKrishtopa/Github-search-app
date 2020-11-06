@@ -10,3 +10,8 @@ export interface IState {
   sessions: Array<ISession>;
   error: null | string;
 }
+
+export interface IRepository {
+  name: string;
+  url: string;
+}
