@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import AccordionItem from 'components/AccordionItem';
-import { GetSessions } from '../../store/actions';
+import { GetSessions } from '../../store/actions/actions';
 import Loader from 'components/Loader';
 import styles from './styles.module.scss';
 
@@ -37,7 +37,12 @@ const ListRequests = () => {
           {currentSessions.length > 0 &&
             currentSessions.map(({ request, data, opened, id }) => (
               <li key={id} className={styles.listItem}>
-                <AccordionItem request={request} data={data} isOpen={opened} />
+                <AccordionItem
+                  request={request}
+                  data={data}
+                  isOpen={opened}
+                  id={id}
+                />
               </li>
             ))}
         </ul>

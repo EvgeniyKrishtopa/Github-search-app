@@ -4,15 +4,22 @@ import {
   GET_REPOS_ERROR,
   GET_SESSIONS_FROM_LOCALSTORAGE,
   CHANGE_SESSION_OPENED_STATUS,
-} from './constants';
+} from '../constants';
+import { ISession, IState } from 'typings/interfaces';
+import { ReposActionTypes } from 'store/actions/types';
 
-const initialState = {
+const initialState: IState = {
   loading: false,
   sessions: [],
   error: null,
 };
 
-const sessionCreator = (sessions, newSession, request, id) => {
+const sessionCreator = (
+  sessions: Array<ISession>,
+  newSession: Array<any>,
+  request: string,
+  id: number,
+): Array<ISession> => {
   if (sessions.length >= 5) {
     return [
       { request, data: newSession, opened: true, id },
@@ -32,10 +39,13 @@ const sessionCreator = (sessions, newSession, request, id) => {
   ];
 };
 
-const sessionActiveHandler = (sessions, activeItem) => {
+const sessionActiveHandler = (
+  sessions: Array<ISession>,
+  activeItem: number,
+): Array<ISession> => {
   return [
     ...sessions.map(item => {
-      if (item.request === activeItem) {
+      if (item.id === activeItem) {
         item.opened = !item.opened;
       } else {
         item.opened = false;
@@ -46,7 +56,7 @@ const sessionActiveHandler = (sessions, activeItem) => {
   ];
 };
 
-const repos = (state = initialState, action) => {
+const repos = (state = initialState, action: ReposActionTypes): IState => {
   switch (action.type) {
     case GET_REPOS_STARTED:
       return {

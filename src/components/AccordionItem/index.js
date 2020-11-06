@@ -1,14 +1,14 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
-import { ChangeSessionOpenedStatus } from '../../store/actions';
+import { ChangeSessionOpenedStatus } from '../../store/actions/actions';
 import Repository from '../Repository';
 import styles from './styles.module.scss';
 
-const RequestItem = ({ request, data, isOpen }) => {
+const RequestItem = ({ request, data, isOpen, id }) => {
   const dispatch = useDispatch();
 
   const changeOpenStatus = () => {
-    dispatch(ChangeSessionOpenedStatus(request));
+    dispatch(ChangeSessionOpenedStatus(id));
   };
 
   return (

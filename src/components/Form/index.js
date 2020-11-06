@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { FetchRepos } from '../../store/actions';
+import { FetchRepos } from '../../store/actions/actions';
 import styles from './styles.module.scss';
 
 const Form = () => {
