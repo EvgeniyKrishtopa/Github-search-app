@@ -22,4 +22,4 @@ const Repository = ({ name, url }) => {
   );
 };
 
-export default Repository;
+export default React.memo(Repository);
