@@ -20,6 +20,7 @@ const ListRequests = () => {
       localStorage.setItem('sessions', JSON.stringify(sessions));
       setCurrentSessions(sessions);
     }
+    setCurrentSessions(sessions);
   }, [sessions]);
 
   useEffect(() => {
