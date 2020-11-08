@@ -51,6 +51,7 @@ export const FetchRepos = (repository: string): ThunkType => {
       if (response.ok) {
         response.json().then(response => {
           dispatch(getReposSuccess(response.items, repository));
+          localStorage.setItem('sessions', JSON.stringify(response.items));
         });
       } else {
         dispatch(getReposError(response.statusText));
