@@ -11,6 +11,8 @@
       "Bash(pnpm run:*)",
       "Bash(npm test)",
       "Bash(npx tsc --noEmit)",
+      "Bash(git push:*)",
+      "Edit(./.claude/settings.json)",
       "Read(//Users/eugenekrishtopa/Desktop/AI-assisted projects/**)",
       "Edit(//Users/eugenekrishtopa/Desktop/AI-assisted projects/**)"
     ],
@@ -30,7 +32,6 @@
       "Read(./.env.*)"
     ],
     "ask": [
-      "Bash(git push:*)",
       "Bash(git merge *)",
       "WebFetch"
     ],
