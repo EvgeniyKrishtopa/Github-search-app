@@ -1,0 +1,77 @@
+{
+  "permissions": {
+    "defaultMode": "acceptEdits",
+    "allow": [
+      "Bash(cd \"/Users/eugenekrishtopa/Desktop/AI-assisted projects/Mobile test setup/GreetingApp\")",
+      "Bash(git commit -m *)",
+      "Bash(git checkout *)",
+      "Bash(git status:*)",
+      "Bash(git diff:*)",
+      "Bash(npm run:*)",
+      "Bash(pnpm run:*)",
+      "Bash(npm test)",
+      "Bash(npx tsc --noEmit)",
+      "Read(//Users/eugenekrishtopa/Desktop/AI-assisted projects/**)",
+      "Edit(//Users/eugenekrishtopa/Desktop/AI-assisted projects/**)"
+    ],
+    "deny": [
+      "Read(**/.env)",
+      "Read(**/.env.*)",
+      "Bash(cat .env:*)",
+      "Bash(rm -rf:*)",
+      "Bash(npm install:*)",
+      "Bash(npm i:*)",
+      "Bash(pnpm add:*)",
+      "Read(./node_modules/**)",
+      "Read(./build/**)",
+      "Read(./coverage/**)",
+      "Read(./yarn.lock)",
+      "Read(./.env)",
+      "Read(./.env.*)"
+    ],
+    "ask": [
+      "Bash(git push:*)",
+      "Bash(git merge *)",
+      "WebFetch"
+    ],
+    "additionalDirectories": [
+      "/Users/eugenekrishtopa/Desktop/AI-assisted projects/Mobile test setup/GreetingApp/.claude/skills"
+    ]
+  },
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "output=$(npm run typecheck 2>&1); code=$?; echo \"$output\" | tail -10; exit $code"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -title 'Claude Code' -message 'Claude has finished running. Check the terminal for results.'"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "echo '=== Branch ===' && git branch --show-current && echo '=== Git Status ===' && git status -s && echo '=== Recent commits ===' && git log --oneline -5"
+          }
+        ]
+      }
+    ]
+  },
+  "enabledPlugins": {
+    "superpowers@claude-plugins-official": true
+  }
+}
