@@ -39,13 +39,30 @@
     ]
   },
   "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "agent",
+            "if": "Bash(git commit *)",
+            "model": "claude-fable-5",
+            "timeout": 120,
+            "statusMessage": "Reviewing staged diff for architecture risks...",
+            "prompt": "You are gating a `git commit` in the Github-search-app repo. The Bash tool call about to run is: $ARGUMENTS\n\n1. Read `.claude/agents/architecture-reviewer.md` in the repo root and follow its review criteria and verification bar exactly — do not invent your own criteria.\n2. Run `git diff --cached` to see the staged changes. If it is empty, there is nothing to review.\n3. Review the staged diff against those criteria. Only count a violation if you can trace a concrete consequence per the agent file's verification bar — do not escalate PLAUSIBLE-only concerns, this hook only escalates CONFIRMED issues.\n4. Output your result as the LAST thing in your response, and ONLY this JSON with no other text after it:\n   - One or more CONFIRMED violations: {\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"ask\", \"permissionDecisionReason\": \"<concise summary: what's violated, where, and why it matters>\"}}\n   - Clean review, or nothing staged: {\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"allow\"}}"
+          }
+        ]
+      }
+    ],
     "PostToolUse": [
       {
         "matcher": "Edit|Write",
         "hooks": [
           {
             "type": "command",
-            "command": "output=$(npm run typecheck 2>&1); code=$?; echo \"$output\" | tail -10; exit $code"
+            "command": "f=$(jq -r '.tool_input.file_path // .tool_response.filePath // empty'); case \"$f\" in *.ts|*.tsx) output=$(yarn typecheck 2>&1); code=$?; echo \"$output\" | tail -10; exit $code;; *) exit 0;; esac",
+            "timeout": 60,
+            "statusMessage": "Typechecking..."
           }
         ]
       }
@@ -55,7 +72,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "terminal-notifier -title 'Claude Code' -message 'Claude has finished running. Check the terminal for results.'"
+            "command": "command -v terminal-notifier >/dev/null 2>&1 && terminal-notifier -title 'Claude Code' -message 'Claude has finished running. Check the terminal for results.' || true"
           }
         ]
       }
@@ -65,7 +82,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "echo '=== Branch ===' && git branch --show-current && echo '=== Git Status ===' && git status -s && echo '=== Recent commits ===' && git log --oneline -5"
+            "command": "if git rev-parse --is-inside-work-tree >/dev/null 2>&1; then echo '=== Branch ==='; git branch --show-current; echo '=== Git Status ==='; git status -s; echo '=== Recent commits ==='; git log --oneline -5; else echo 'Not a git repository.'; fi"
           }
         ]
       }
