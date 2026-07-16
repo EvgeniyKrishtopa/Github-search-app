@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-Package manager is **yarn** (see `yarn.lock`). Built on Vite (`vite`, `@vitejs/plugin-react`).
+Package manager is **yarn** (see `yarn.lock`). Built on Vite (`vite`, `@vitejs/plugin-react`) with React 19 and react-redux 9.
 
 - `yarn dev` — run dev server at http://localhost:5173/Github-search-app/
 - `yarn build` — production build to `dist/`
@@ -32,6 +32,7 @@ Single-page app: search the GitHub repositories API and keep a rolling history o
 **Persistence** is handled entirely in `components/ListRequests/index.tsx` via two `useEffect`s — one writes `sessions` to `localStorage` on change, the other hydrates the store from `localStorage` on mount by dispatching `GetSessions`. There is no persistence middleware; do not add localStorage logic in the reducer or thunk.
 
 **Component layers:**
+- `src/index.tsx` mounts `App` via `createRoot` (`react-dom/client`) inside `React.StrictMode` — `ReactDOM.render` is removed in React 19, not just deprecated.
 - `App` → `Header` + `SearchPage`
 - `SearchPage` → `Form` (input + dispatch) + `ListRequests` (history + persistence)
 - `ListRequests` → `AccordionItem` (per session) → `Repository` (per repo)

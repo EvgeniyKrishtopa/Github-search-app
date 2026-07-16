@@ -38,13 +38,13 @@ Each numbered group ends green — installs, runs, tests pass — and is indepen
 
 ## 4. React 16 → 19 and react-redux 7 → 9
 
-- [ ] 4.1 Upgrade `react`, `react-dom` to 19 and their `@types`. Upgrade `react-redux` to 9 — forced, v7 does not support React 19.
-- [ ] 4.2 Upgrade the test stack for React 19: `@testing-library/react` to 16.x, `jest-dom` to 6.x, `user-event` to 14.x. Note `user-event` v14 requires `userEvent.setup()` and is async — update the `Form` test accordingly.
-- [ ] 4.3 Rewrite `src/index.tsx` to `createRoot` from `react-dom/client`. `ReactDOM.render` is removed in React 19, not merely deprecated.
-- [ ] 4.4 Switch `vite.config.ts` to the automatic JSX runtime and set `"jsx": "react-jsx"` in `tsconfig.json`. Drop the now-redundant `import React` from files that use no React API.
-- [ ] 4.5 Run the full suite. Verify green — this is the step the suite from groups 2–3 exists to protect.
-- [ ] 4.6 Verify in `yarn dev` under StrictMode: history restores correctly despite effects double-invoking, with no duplicated sessions.
-- [ ] 4.7 Update `CLAUDE.md`: React version and the `createRoot` entry point.
+- [x] 4.1 Upgrade `react`, `react-dom` to 19 and their `@types`. Upgrade `react-redux` to 9 — forced, v7 does not support React 19.
+- [x] 4.2 Upgrade the test stack for React 19: `@testing-library/react` to 16.x, `jest-dom` to 6.x, `user-event` to 14.x. Note `user-event` v14 requires `userEvent.setup()` and is async — update the `Form` test accordingly.
+- [x] 4.3 Rewrite `src/index.tsx` to `createRoot` from `react-dom/client`. `ReactDOM.render` is removed in React 19, not merely deprecated.
+- [x] 4.4 Switch `vite.config.ts` to the automatic JSX runtime and set `"jsx": "react-jsx"` in `tsconfig.json`. Drop the now-redundant `import React` from files that use no React API.
+- [x] 4.5 Run the full suite. Verify green — this is the step the suite from groups 2–3 exists to protect.
+- [x] 4.6 Verify in `yarn dev` under StrictMode: history restores correctly despite effects double-invoking, with no duplicated sessions.
+- [x] 4.7 Update `CLAUDE.md`: React version and the `createRoot` entry point.
 
 ## 5. Redux Toolkit
 

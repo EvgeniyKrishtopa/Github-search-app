@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import AccordionItem from 'components/AccordionItem';
 import { GetSessions } from 'store/actions/actions';
