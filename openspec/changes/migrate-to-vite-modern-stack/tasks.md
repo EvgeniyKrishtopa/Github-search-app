@@ -10,7 +10,7 @@ Each numbered group ends green — installs, runs, tests pass — and is indepen
 - [x] 1.6 Replace `/// <reference types="react-scripts" />` in `src/react-app-env.d.ts` with `/// <reference types="vite/client" />`.
 - [x] 1.7 Replace scripts in `package.json`: `dev`/`build`/`preview`. Update `deploy` to `gh-pages -d dist` and delete the now-unused `homepage` field — same commit as 1.4, or the deploy silently publishes the wrong directory.
 - [x] 1.8 Run `yarn dev`. Verify the app loads, all absolute imports resolve, SCSS modules apply, and a search returns results.
-- [ ] 1.9 Run `yarn build && yarn preview`. Verify assets load under the `/Github-search-app/` base path — this is the only place the base path failure is observable before production.
+- [x] 1.9 Run `yarn build && yarn preview`. Verify assets load under the `/Github-search-app/` base path — this is the only place the base path failure is observable before production.
 - [ ] 1.10 Update `CLAUDE.md`: Commands section (CRA → Vite), remove the "malformed query string" note's CRA framing, note `dist/` output.
 
 ## 2. Vitest + tests that pin current behavior
