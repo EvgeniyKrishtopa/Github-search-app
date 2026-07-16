@@ -11,20 +11,20 @@ Each numbered group ends green — installs, runs, tests pass — and is indepen
 - [x] 1.7 Replace scripts in `package.json`: `dev`/`build`/`preview`. Update `deploy` to `gh-pages -d dist` and delete the now-unused `homepage` field — same commit as 1.4, or the deploy silently publishes the wrong directory.
 - [x] 1.8 Run `yarn dev`. Verify the app loads, all absolute imports resolve, SCSS modules apply, and a search returns results.
 - [x] 1.9 Run `yarn build && yarn preview`. Verify assets load under the `/Github-search-app/` base path — this is the only place the base path failure is observable before production.
-- [ ] 1.10 Update `CLAUDE.md`: Commands section (CRA → Vite), remove the "malformed query string" note's CRA framing, note `dist/` output.
+- [x] 1.10 Update `CLAUDE.md`: Commands section (CRA → Vite), remove the "malformed query string" note's CRA framing, note `dist/` output.
 
 ## 2. Vitest + tests that pin current behavior
 
-- [ ] 2.1 Add `vitest`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `jsdom` at versions matching React 16 for now (RTL 9.x). Configure `test` in `vite.config.ts` with `environment: 'jsdom'` and a setup file importing `@testing-library/jest-dom`.
-- [ ] 2.2 Add `test` and `test:run` scripts. Verify a trivial smoke test passes.
-- [ ] 2.3 Test `sessionCreator` via the reducer: a successful search creates a session with the right request text and results; newest is ordered first. (`search-history`: Session creation)
-- [ ] 2.4 Test the 5-session cap: below the cap all sessions retained; a 6th search keeps exactly 5, drops the oldest, keeps the newest. (`search-history`: History cap)
-- [ ] 2.5 Test single-open behavior: a new session opens and collapses the rest; expanding one collapses the others; toggling the open one collapses it. (`search-history`: Single-open accordion)
-- [ ] 2.6 Test hydration: `GET_SESSIONS_FROM_LOCALSTORAGE` replaces the session list; dispatching it twice is idempotent (no duplication). (`search-history`: persistence, idempotency)
-- [ ] 2.7 Test `Form`: a non-empty query dispatches a fetch; an empty query does not; the input clears either way. (`repository-search`: Search submission)
-- [ ] 2.8 Test `AccordionItem`: a session with no repositories shows the empty message; a session with repositories renders each name linking to its `html_url`. (`repository-search`: Successful results / `search-history`: Empty result set)
-- [ ] 2.9 Write the three bug-exposing tests as `.skip` with a comment pointing to group 3 — loading stuck true on error, error never clearing, no `.catch()`. Do not encode broken behavior as passing assertions.
-- [ ] 2.10 Update `CLAUDE.md`: replace "No test files exist yet" with the real test commands and colocation convention.
+- [x] 2.1 Add `vitest`, `@testing-library/react`, `@testing-library/jest-dom`, `@testing-library/user-event`, `jsdom` at versions matching React 16 for now (RTL 9.x). Configure `test` in `vite.config.ts` with `environment: 'jsdom'` and a setup file importing `@testing-library/jest-dom`.
+- [x] 2.2 Add `test` and `test:run` scripts. Verify a trivial smoke test passes.
+- [x] 2.3 Test `sessionCreator` via the reducer: a successful search creates a session with the right request text and results; newest is ordered first. (`search-history`: Session creation)
+- [x] 2.4 Test the 5-session cap: below the cap all sessions retained; a 6th search keeps exactly 5, drops the oldest, keeps the newest. (`search-history`: History cap)
+- [x] 2.5 Test single-open behavior: a new session opens and collapses the rest; expanding one collapses the others; toggling the open one collapses it. (`search-history`: Single-open accordion)
+- [x] 2.6 Test hydration: `GET_SESSIONS_FROM_LOCALSTORAGE` replaces the session list; dispatching it twice is idempotent (no duplication). (`search-history`: persistence, idempotency)
+- [x] 2.7 Test `Form`: a non-empty query dispatches a fetch; an empty query does not; the input clears either way. (`repository-search`: Search submission)
+- [x] 2.8 Test `AccordionItem`: a session with no repositories shows the empty message; a session with repositories renders each name linking to its `html_url`. (`repository-search`: Successful results / `search-history`: Empty result set)
+- [x] 2.9 Write the three bug-exposing tests as `.skip` with a comment pointing to group 3 — loading stuck true on error, error never clearing, no `.catch()`. Do not encode broken behavior as passing assertions.
+- [x] 2.10 Update `CLAUDE.md`: replace "No test files exist yet" with the real test commands and colocation convention.
 
 ## 3. Fix the three loading/error bugs
 
