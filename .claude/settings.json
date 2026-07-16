@@ -2,19 +2,25 @@
   "permissions": {
     "defaultMode": "acceptEdits",
     "allow": [
-      "Bash(cd \"/Users/eugenekrishtopa/Desktop/AI-assisted projects/Mobile test setup/GreetingApp\")",
+      "Bash(yarn typecheck:*)",
+      "Bash(yarn lint:*)",
+      "Bash(yarn dev:*)",
+      "Bash(yarn test:*)",
+      "Bash(yarn test:run:*)",
+      "Bash(curl:*)",
+      "Bash(node -p:*)",
+      "Bash(node -e:*)",
+      "Bash(which:*)",
+      "Bash(cat:*)",
+      "Bash(mkdir:*)",
       "Bash(git commit -m *)",
       "Bash(git checkout *)",
       "Bash(git status:*)",
       "Bash(git diff:*)",
-      "Bash(npm run:*)",
-      "Bash(pnpm run:*)",
-      "Bash(npm test)",
-      "Bash(npx tsc --noEmit)",
-      "Bash(git push:*)",
-      "Edit(./.claude/settings.json)",
-      "Read(//Users/eugenekrishtopa/Desktop/AI-assisted projects/**)",
-      "Edit(//Users/eugenekrishtopa/Desktop/AI-assisted projects/**)"
+      "Write",
+      "Edit",
+      "Write(./.claude/docs/**)",
+      "Edit(./.claude/docs/**)"
     ],
     "deny": [
       "Read(**/.env)",
@@ -24,19 +30,23 @@
       "Bash(npm install:*)",
       "Bash(npm i:*)",
       "Bash(pnpm add:*)",
+      "Bash(yarn add:*)",
+      "Bash(screencapture:*)",
       "Read(./node_modules/**)",
       "Read(./build/**)",
+      "Read(./dist/**)",
       "Read(./coverage/**)",
       "Read(./yarn.lock)",
       "Read(./.env)",
       "Read(./.env.*)"
     ],
     "ask": [
-      "Bash(git merge *)",
+      "Bash(git merge:*)",
+      "Bash(git push:*)",
       "WebFetch"
     ],
     "additionalDirectories": [
-      "/Users/eugenekrishtopa/Desktop/AI-assisted projects/Mobile test setup/GreetingApp/.claude/skills"
+      "/Users/eugenekrishtopa/Desktop/AI-assisted projects/Github-search-app/.claude/skills"
     ]
   },
   "hooks": {
@@ -88,8 +98,5 @@
         ]
       }
     ]
-  },
-  "enabledPlugins": {
-    "superpowers@claude-plugins-official": true
   }
 }

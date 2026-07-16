@@ -78,6 +78,12 @@ Today `ListRequests` renders the list, owns `localStorage` via two `useEffect`s,
 
 React 19 StrictMode double-invokes effects in development. Restoration must be safe to run twice — it replaces the session list rather than appending. This is specified (`search-history`: "Restoration is idempotent under repeated initialization") rather than left to chance, because the current code is only accidentally safe.
 
+### TypeScript compiler version bumps in step 1, not step 7
+
+Discovered during implementation: Vite 8's shipped `.d.ts` files (`vite/client`, `vite.config.ts`'s own types) use syntax `typescript@4.0.3` cannot parse — `tsc --noEmit` fails with syntax errors inside `node_modules/vite/types/*.d.ts` itself, before any project code is touched. Vite also requires `@types/node` `^20.19 || >=22.12`; the project pinned `^14.10.3`.
+
+The original plan (`### Finish TypeScript rather than "add" it`, below) assumed the compiler version was untouched until step 7's `noImplicitAny` cleanup. That assumption doesn't hold: the toolchain doesn't typecheck at all until `typescript` and `@types/node` move, so both bump in step 1.2/1.3 alongside the rest of the toolchain swap, not step 7. Step 7 remains responsible for `noImplicitAny` and clearing stray `any`.
+
 ### Finish TypeScript rather than "add" it
 
 TS is already on with `strict: true`. The gaps are `noImplicitAny: false`, `data: Array<any>` for the API response, and a lone `store/constants.js`. RTK closes most of these for free: `createSlice` infers action types, so `constants.js` and `actions/types.ts` disappear rather than needing conversion.

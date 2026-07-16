@@ -2,13 +2,13 @@ Each numbered group ends green — installs, runs, tests pass — and is indepen
 
 ## 1. Vite + dart-sass (React 16 stays)
 
-- [ ] 1.1 Confirm the premise: run `yarn install` on Node 24 and capture the `node-sass` failure. If it installs cleanly, stop and revisit the ordering in `design.md` (Open Questions) before continuing.
-- [ ] 1.2 Remove `node-sass`, `react-scripts`, `eslint-config-react-app`, and the dead deps (`react-router-dom`, `material-icons-react`, `@types/react-router`, `@types/react-router-dom`, `@types/redux-form`) from `package.json`.
-- [ ] 1.3 Add `vite`, `@vitejs/plugin-react`, `sass`, `vite-tsconfig-paths`. Verify `yarn install` now succeeds.
-- [ ] 1.4 Create `vite.config.ts`: React plugin with `jsxRuntime: 'classic'` (matches current `jsx: "react"`), `tsconfigPaths()`, `base: '/Github-search-app/'`, `build.outDir: 'dist'`, and `css.preprocessorOptions.scss.includePaths: ['src']` to preserve `@import 'styles/variables.scss'` resolution.
-- [ ] 1.5 Move `public/index.html` → `./index.html`; strip `%PUBLIC_URL%` prefixes; add `<script type="module" src="/src/index.tsx"></script>` before `</body>`.
-- [ ] 1.6 Replace `/// <reference types="react-scripts" />` in `src/react-app-env.d.ts` with `/// <reference types="vite/client" />`.
-- [ ] 1.7 Replace scripts in `package.json`: `dev`/`build`/`preview`. Update `deploy` to `gh-pages -d dist` and delete the now-unused `homepage` field — same commit as 1.4, or the deploy silently publishes the wrong directory.
+- [x] 1.1 Confirm the premise: run `yarn install` on Node 24 and capture the `node-sass` failure. If it installs cleanly, stop and revisit the ordering in `design.md` (Open Questions) before continuing.
+- [x] 1.2 Remove `node-sass`, `react-scripts`, `eslint-config-react-app`, and the dead deps (`react-router-dom`, `material-icons-react`, `@types/react-router`, `@types/react-router-dom`, `@types/redux-form`) from `package.json`.
+- [x] 1.3 Add `vite`, `@vitejs/plugin-react`, `sass`. Verify `yarn install` now succeeds. (`vite-tsconfig-paths` was evaluated but dropped — Vite 8 resolves tsconfig paths natively via `resolve.tsconfigPaths`, so the plugin is redundant.)
+- [x] 1.4 Create `vite.config.ts`: React plugin with `jsxRuntime: 'classic'` (matches current `jsx: "react"`), `resolve.tsconfigPaths: true` (native, in place of the `vite-tsconfig-paths` plugin), `base: '/Github-search-app/'`, `build.outDir: 'dist'`, and `css.preprocessorOptions.scss.includePaths: ['src']` to preserve `@import 'styles/variables.scss'` resolution.
+- [x] 1.5 Move `public/index.html` → `./index.html`; strip `%PUBLIC_URL%` prefixes; add `<script type="module" src="/src/index.tsx"></script>` before `</body>`.
+- [x] 1.6 Replace `/// <reference types="react-scripts" />` in `src/react-app-env.d.ts` with `/// <reference types="vite/client" />`.
+- [x] 1.7 Replace scripts in `package.json`: `dev`/`build`/`preview`. Update `deploy` to `gh-pages -d dist` and delete the now-unused `homepage` field — same commit as 1.4, or the deploy silently publishes the wrong directory.
 - [ ] 1.8 Run `yarn dev`. Verify the app loads, all absolute imports resolve, SCSS modules apply, and a search returns results.
 - [ ] 1.9 Run `yarn build && yarn preview`. Verify assets load under the `/Github-search-app/` base path — this is the only place the base path failure is observable before production.
 - [ ] 1.10 Update `CLAUDE.md`: Commands section (CRA → Vite), remove the "malformed query string" note's CRA framing, note `dist/` output.
