@@ -5,14 +5,22 @@
       "Bash(yarn typecheck:*)",
       "Bash(yarn lint:*)",
       "Bash(yarn dev:*)",
+      "Bash(yarn preview:*)",
       "Bash(yarn test:*)",
       "Bash(yarn test:run:*)",
+      "Bash(yarn info:*)",
+      "Bash(yarn cache:*)",
+      "Bash(cd:*)",
       "Bash(curl:*)",
       "Bash(node -p:*)",
       "Bash(node -e:*)",
       "Bash(which:*)",
       "Bash(cat:*)",
       "Bash(mkdir:*)",
+      "Bash(echo:*)",
+      "Bash(sleep:*)",
+      "Bash(kill:*)",
+      "Bash(for *)",
       "Bash(git commit -m *)",
       "Bash(git checkout *)",
       "Bash(git status:*)",
@@ -43,7 +51,6 @@
       "Read(./.env.*)"
     ],
     "ask": [
-      "Bash(git merge:*)",
       "Bash(git push:*)",
       "WebFetch"
     ],
@@ -63,6 +70,12 @@
             "timeout": 120,
             "statusMessage": "Reviewing staged diff for architecture risks...",
             "prompt": "You are gating a `git commit` in the Github-search-app repo. The Bash tool call about to run is: $ARGUMENTS\n\n1. Read `.claude/agents/architecture-reviewer.md` in the repo root and follow its review criteria and verification bar exactly — do not invent your own criteria.\n2. Run `git diff --cached` to see the staged changes. If it is empty, there is nothing to review.\n3. Review the staged diff against those criteria. Only count a violation if you can trace a concrete consequence per the agent file's verification bar — do not escalate PLAUSIBLE-only concerns, this hook only escalates CONFIRMED issues.\n4. Output your result as the LAST thing in your response, and ONLY this JSON with no other text after it:\n   - One or more CONFIRMED violations: {\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"ask\", \"permissionDecisionReason\": \"<concise summary: what's violated, where, and why it matters>\"}}\n   - Clean review, or nothing staged: {\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"allow\"}}"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git merge *)",
+            "statusMessage": "Checking merge target branch...",
+            "command": "branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); if [ \"$branch\" = \"main\" ] || [ \"$branch\" = \"master\" ]; then printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"ask\",\"permissionDecisionReason\":\"Merging into %s requires confirmation.\"}}' \"$branch\"; else echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"allow\"}}'; fi"
           }
         ]
       }
