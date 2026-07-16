@@ -20,7 +20,9 @@
       "Write",
       "Edit",
       "Write(./.claude/docs/**)",
-      "Edit(./.claude/docs/**)"
+      "Edit(./.claude/docs/**)",
+      "Write(./.claude/skills/**)",
+      "Edit(./.claude/skills/**)"
     ],
     "deny": [
       "Read(**/.env)",
