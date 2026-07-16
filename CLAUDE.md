@@ -4,14 +4,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Commands
 
-Package manager is **yarn** (see `yarn.lock`). Built on Create React App (`react-scripts`).
+Package manager is **yarn** (see `yarn.lock`). Built on Vite (`vite`, `@vitejs/plugin-react`).
 
-- `yarn start` — run dev server at http://localhost:3000
-- `yarn build` — production build to `build/`
-- `yarn test` — Jest + React Testing Library in interactive watch mode
+- `yarn dev` — run dev server at http://localhost:5173/Github-search-app/
+- `yarn build` — production build to `dist/`
+- `yarn preview` — serve the `dist/` build locally under the `/Github-search-app/` base path (the only way to catch base-path issues before deploying)
+- `yarn test` — Vitest + React Testing Library in interactive watch mode
   - Run a single test file: `yarn test src/path/File.test.tsx`
-  - CI / single run: `CI=true yarn test`
-- `yarn deploy` — builds then publishes `build/` to GitHub Pages via `gh-pages` (deploys to the `homepage` URL in `package.json`)
+  - CI / single run: `yarn test:run` (or `yarn test:coverage` for coverage)
+- `yarn deploy` — builds then publishes `dist/` to GitHub Pages via `gh-pages` (base path is set via Vite's `base` config in `vite.config.ts`, not a `homepage` field)
 
 There is no separate lint script; ESLint runs through `react-scripts` (warnings surface in the dev console and build output). Prettier config lives in `.prettierrc.json` (single quotes, trailing commas, `arrowParens: avoid`, 80 col).
 
@@ -51,4 +52,4 @@ Use small, focused branches and commits. Never mix unrelated changes. Read `.cla
 ## Notes / Known Issues
 
 - The API request URL has a malformed query string: `?q=${repository}?&per_page=8` (stray `?` before `&per_page`). Preserve or fix intentionally, but be aware pagination may not apply as written.
-- No test files exist yet; `react-scripts test` is configured and ready. When adding behavior, colocate `*.test.tsx` next to the component.
+- Tests live next to the code they cover: `*.test.tsx` beside components, `*.test.ts` beside reducers/actions. Vitest runs in `jsdom` with a setup file (`src/setupTests.ts`) that registers `@testing-library/jest-dom/vitest` matchers and calls RTL's `cleanup()` after each test (Vitest doesn't expose a global `afterEach` for RTL to auto-detect, since `test.globals` is off — `describe`/`it`/`expect` are imported explicitly from `vitest` in every test file). Three tests are `.skip`ped pending known bug fixes (see the malformed-query-string note above and `tasks.md` group 3).
