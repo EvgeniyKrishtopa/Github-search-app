@@ -117,16 +117,14 @@ describe('repos reducer: hydration from localStorage', () => {
   });
 });
 
-describe('repos reducer: known bugs (fixed in migration group 3)', () => {
-  // Bug: GET_REPOS_ERROR never sets loading: false. See tasks.md group 3.1.
-  it.skip('ends loading when a search fails with an API error', () => {
+describe('repos reducer: loading and error handling', () => {
+  it('ends loading when a search fails with an API error', () => {
     let state = repos(initialState, { type: GET_REPOS_STARTED, loading: true });
     state = repos(state, { type: GET_REPOS_ERROR, error: 'Not Found' });
     expect(state.loading).toBe(false);
   });
 
-  // Bug: a stale error is never cleared when a new search starts. See tasks.md group 3.2.
-  it.skip('clears a previous error when a new search starts', () => {
+  it('clears a previous error when a new search starts', () => {
     let state = repos(initialState, {
       type: GET_REPOS_ERROR,
       error: 'Not Found',

@@ -62,6 +62,7 @@ const repos = (state = initialState, action: ReposActionTypes): IState => {
       return {
         ...state,
         loading: action.loading,
+        error: null,
       };
 
     case GET_REPOS_SUCCESS:
@@ -80,6 +81,7 @@ const repos = (state = initialState, action: ReposActionTypes): IState => {
       return {
         ...state,
         error: action.error,
+        loading: false,
       };
 
     case GET_SESSIONS_FROM_LOCALSTORAGE:

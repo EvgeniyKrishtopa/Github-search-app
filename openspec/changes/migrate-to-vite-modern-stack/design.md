@@ -129,5 +129,5 @@ Deployment is verified at step 1 (`vite preview` with `base`) and again after st
 ## Open Questions
 
 - **Should `yarn install` failure be confirmed before starting?** The whole ordering argument rests on `node-sass` being the blocker. This is strongly evidenced (deprecated upstream, latest is 9.0.0, no Node 24 prebuild) but not empirically observed on this machine. Task 1.1 confirms it. If it installs cleanly, step 1 becomes less urgent and the ordering loosens — though the migration remains worth doing.
-- **Does `per_page=8` currently take effect?** In `?q=${repository}?&per_page=8` the `&` does separate parameters, so `per_page=8` likely applies and the stray `?` merely pollutes the search term. `CLAUDE.md` claims pagination "may not apply." Worth confirming against a real response before treating the fix as behavior-preserving.
+- ~~**Does `per_page=8` currently take effect?**~~ Resolved (task 3.5): confirmed against a live response — `curl "https://api.github.com/search/repositories?q=react&per_page=8"` returned exactly 8 items against a `total_count` in the millions. `per_page=8` was already taking effect; the stray `?` only polluted the search term, as suspected.
 - **React 19 or 18?** Assumed 19 (current). If a transitive dependency resists, 18 satisfies every requirement here — `react-redux@9` supports both.
