@@ -44,6 +44,10 @@ Single-page app: search the GitHub repositories API and keep a rolling history o
 - TypeScript `strict` is on but `noImplicitAny` is off and `no-explicit-any` is disabled; the GitHub API response is typed as `any` (`data: Array<any>`). Prefer typing new code properly rather than following the `any` precedent.
 - Components are functional with hooks; `AccordionItem` is wrapped in `React.memo`.
 
+## Git Conventions
+
+Use small, focused branches and commits. Never mix unrelated changes. Read `.claude/docs/git-conventions.md` before creating a branch or a commit — it covers branch naming, Conventional Commits format, and AI commit discipline.
+
 ## Notes / Known Issues
 
 - The API request URL has a malformed query string: `?q=${repository}?&per_page=8` (stray `?` before `&per_page`). Preserve or fix intentionally, but be aware pagination may not apply as written.
