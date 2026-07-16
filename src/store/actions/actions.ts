@@ -46,16 +46,21 @@ export const FetchRepos = (repository: string): ThunkType => {
     dispatch(getReposStarted());
 
     fetch(
-      `https://api.github.com/search/repositories?q=${repository}?&per_page=8`,
-    ).then(response => {
-      if (response.ok) {
-        response.json().then(response => {
-          dispatch(getReposSuccess(response.items, repository));
-        });
-      } else {
+      `https://api.github.com/search/repositories?q=${encodeURIComponent(
+        repository,
+      )}&per_page=8`,
+    )
+      .then(response => {
+        if (response.ok) {
+          return response.json().then(data => {
+            dispatch(getReposSuccess(data.items, repository));
+          });
+        }
         dispatch(getReposError(response.statusText));
-      }
-    });
+      })
+      .catch(() => {
+        dispatch(getReposError('Network error. Please try again.'));
+      });
   };
 };
 

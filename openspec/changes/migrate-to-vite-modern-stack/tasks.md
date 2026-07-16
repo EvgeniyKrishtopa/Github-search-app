@@ -28,13 +28,13 @@ Each numbered group ends green — installs, runs, tests pass — and is indepen
 
 ## 3. Fix the three loading/error bugs
 
-- [ ] 3.1 Un-skip the loading test. Fix `GET_REPOS_ERROR` to set `loading: false`. (`repository-search`: Loading ends on API error)
-- [ ] 3.2 Un-skip the error-clearing test. Clear `error` when a search starts (`GET_REPOS_STARTED` → `error: null`), which covers both the stale-error and success paths. (`repository-search`: Error clears on a subsequent search)
-- [ ] 3.3 Un-skip the network test. Add `.catch()` to the `fetch` chain in `FetchRepos`, dispatching `getReposError` so a rejection sets `loading: false` and surfaces a message. (`repository-search`: Network request rejects, Loading ends on network failure)
-- [ ] 3.4 URL-encode the query with `encodeURIComponent` and remove the stray `?` from `?q=${repository}?&per_page=8`. Add a test that `foo&per_page=100` is sent as a search term, not a parameter. (`repository-search`: Query encoding)
-- [ ] 3.5 Confirm `per_page=8` actually takes effect against a real response (see `design.md` Open Questions), then assert it. (`repository-search`: Result limit)
-- [ ] 3.6 Verify manually in `yarn dev`: search a nonsense term, force an offline error, confirm the spinner stops and the message clears on the next search.
-- [ ] 3.7 Update `CLAUDE.md`: drop the "malformed query string" known-issue note — it is fixed.
+- [x] 3.1 Un-skip the loading test. Fix `GET_REPOS_ERROR` to set `loading: false`. (`repository-search`: Loading ends on API error)
+- [x] 3.2 Un-skip the error-clearing test. Clear `error` when a search starts (`GET_REPOS_STARTED` → `error: null`), which covers both the stale-error and success paths. (`repository-search`: Error clears on a subsequent search)
+- [x] 3.3 Un-skip the network test. Add `.catch()` to the `fetch` chain in `FetchRepos`, dispatching `getReposError` so a rejection sets `loading: false` and surfaces a message. (`repository-search`: Network request rejects, Loading ends on network failure)
+- [x] 3.4 URL-encode the query with `encodeURIComponent` and remove the stray `?` from `?q=${repository}?&per_page=8`. Add a test that `foo&per_page=100` is sent as a search term, not a parameter. (`repository-search`: Query encoding)
+- [x] 3.5 Confirm `per_page=8` actually takes effect against a real response (see `design.md` Open Questions), then assert it. (`repository-search`: Result limit)
+- [x] 3.6 Verify manually in `yarn dev`: search a nonsense term, force an offline error, confirm the spinner stops and the message clears on the next search.
+- [x] 3.7 Update `CLAUDE.md`: drop the "malformed query string" known-issue note — it is fixed.
 
 ## 4. React 16 → 19 and react-redux 7 → 9
 

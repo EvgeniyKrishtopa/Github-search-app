@@ -49,9 +49,19 @@ describe('FetchRepos', () => {
     expect(store.getState().repos.sessions[0].request).toBe('react');
   });
 
-  // Bug: fetch has no .catch(), so a network rejection dispatches nothing.
-  // See tasks.md group 3.3.
-  it.skip('dispatches an error and ends loading when the network request rejects', async () => {
+  it('URL-encodes the query so reserved characters are sent as a search term, not a parameter', () => {
+    const fetchMock = vi.fn((_url: string) => new Promise(() => undefined));
+    vi.stubGlobal('fetch', fetchMock);
+    const { dispatch } = buildStore();
+
+    dispatch(FetchRepos('foo&per_page=100'));
+
+    const requestedUrl = new URL(fetchMock.mock.calls[0][0]);
+    expect(requestedUrl.searchParams.get('q')).toBe('foo&per_page=100');
+    expect(requestedUrl.searchParams.get('per_page')).toBe('8');
+  });
+
+  it('dispatches an error and ends loading when the network request rejects', async () => {
     vi.stubGlobal(
       'fetch',
       vi.fn(() => Promise.reject(new Error('offline'))),

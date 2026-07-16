@@ -51,5 +51,4 @@ Use small, focused branches and commits. Never mix unrelated changes. Read `.cla
 
 ## Notes / Known Issues
 
-- The API request URL has a malformed query string: `?q=${repository}?&per_page=8` (stray `?` before `&per_page`). Preserve or fix intentionally, but be aware pagination may not apply as written.
-- Tests live next to the code they cover: `*.test.tsx` beside components, `*.test.ts` beside reducers/actions. Vitest runs in `jsdom` with a setup file (`src/setupTests.ts`) that registers `@testing-library/jest-dom/vitest` matchers and calls RTL's `cleanup()` after each test (Vitest doesn't expose a global `afterEach` for RTL to auto-detect, since `test.globals` is off — `describe`/`it`/`expect` are imported explicitly from `vitest` in every test file). Three tests are `.skip`ped pending known bug fixes (see the malformed-query-string note above and `tasks.md` group 3).
+- Tests live next to the code they cover: `*.test.tsx` beside components, `*.test.ts` beside reducers/actions. Vitest runs in `jsdom` with a setup file (`src/setupTests.ts`) that registers `@testing-library/jest-dom/vitest` matchers and calls RTL's `cleanup()` after each test (Vitest doesn't expose a global `afterEach` for RTL to auto-detect, since `test.globals` is off — `describe`/`it`/`expect` are imported explicitly from `vitest` in every test file).
