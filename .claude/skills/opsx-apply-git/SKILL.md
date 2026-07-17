@@ -1,15 +1,15 @@
 ---
 name: opsx-apply-git
-description: Implement tasks from an OpenSpec change in this repo, wrapped in the branch-per-group git workflow from .claude/docs/git-conventions.md (cut a branch per task group, auto-commit when green, merge back, push). Use instead of the vendored /opsx:apply whenever the user wants to implement, continue, or work through OpenSpec tasks — the vendored skill never mentions branches or commits, so used alone it leaves work sitting uncommitted on the parent branch.
+description: Implement tasks from an OpenSpec change in this repo, wrapped in the branch-per-group git workflow from .claude/docs/git-conventions.md (cut a branch per task group, auto-commit when green, merge back, push) and this repo's automated review gates from .claude/docs/review-gates.md (code-review then test-coverage-review before each group's commit). Use instead of the vendored /opsx:apply whenever the user wants to implement, continue, or work through OpenSpec tasks — the vendored skill never mentions branches, commits, or reviews, so used alone it leaves work sitting uncommitted (or unreviewed) on the parent branch.
 ---
 
-Implement tasks from an OpenSpec change, but — unlike the vendored `/opsx:apply` (`.claude/commands/opsx/apply.md`, `.claude/skills/openspec-apply-change/SKILL.md`) — do it inside the git workflow this repo's `.claude/docs/git-conventions.md` defines for OpenSpec work. That file is the source of truth; if it changes, follow the updated version over this summary.
+Implement tasks from an OpenSpec change, but — unlike the vendored `/opsx:apply` (`.claude/commands/opsx/apply.md`, `.claude/skills/openspec-apply-change/SKILL.md`) — do it inside the git workflow this repo's `.claude/docs/git-conventions.md` defines for OpenSpec work, and run the review gates `.claude/docs/review-gates.md` defines before each group's commit. Both files are the source of truth for their respective concerns; if either changes, follow the updated version over this summary.
 
-This skill exists because the vendored `/opsx:apply` only implements tasks and checks boxes — it says nothing about branches or commits, so followed on its own, a whole session's work (potentially several task groups) sits uncommitted on the parent feature branch until someone notices. That already happened once on this project.
+This skill exists because the vendored `/opsx:apply` only implements tasks and checks boxes — it says nothing about branches, commits, or review, so followed on its own, a whole session's work (potentially several task groups) sits uncommitted and unreviewed on the parent feature branch until someone notices. That already happened once on this project (the branch/commit gap; the review gap is why Gates 3–4 below exist).
 
-## 0. Read the git conventions first
+## 0. Read the git conventions and review gates first
 
-Before touching any code, read `.claude/docs/git-conventions.md` in full. Its "OpenSpec Task Granularity" section is what this skill implements, and it explicitly overrides the general "never commit without being asked" default — but only at the boundaries this skill manages (see step 4). Do this before step 1, not right before your first `git commit`.
+Before touching any code, read `.claude/docs/git-conventions.md` and `.claude/docs/review-gates.md` in full. Git-conventions' "OpenSpec Task Granularity" section is what step 4 below implements, and it explicitly overrides the general "never commit without being asked" default — but only at the boundaries this skill manages (see step 4). Review-gates' Gates 3 and 4 are what step 4 also runs before that commit. Do this before step 1, not right before your first `git commit`.
 
 ## 1. Determine the parent feature branch
 
@@ -32,15 +32,17 @@ A "group" is a numbered `##` section in `tasks.md` (e.g. `## 4. React 16 → 19 
 2. **Implement the group's sub-tasks**, following the same guardrails as `/opsx:apply`: minimal, focused changes; mark each `- [ ]` → `- [x]` in `tasks.md` immediately on completion; pause and ask if a task is ambiguous, implementation reveals a design issue, or you hit an error/blocker.
 3. Treat a mid-group pause as a stopping point, not a failure to recover from — leave the branch checked out with whatever's committed or uncommitted, report status, and wait. Do not commit a half-finished group just to "close it out."
 
-## 4. Commit, merge, and push once the group is green
+## 4. Review, commit, merge, and push once the group is green
 
 Once every sub-task in the group is done and the group's own verification passes (installs, runs, tests — whatever the group's tasks specify, e.g. `yarn typecheck && yarn test:run`, plus `yarn lint` since pre-commit runs it):
 
 1. Review the diff (`git status -s`, `git diff --stat`) — confirm it's scoped to this group, no unrelated files.
-2. Commit automatically — **do not wait for the user to ask**, this is the documented override. Use Conventional Commits format (`.claude/docs/git-conventions.md` → Commit Messages), and summarize in the body: what changed, why, how it was validated, remaining risks (per the global AI Commit Discipline standard). If the pre-commit hook (typecheck/lint) fails, fix the root cause and recommit — never `--no-verify`.
-3. Checkout the parent branch and merge the group branch: `git merge --no-ff <group-branch>`.
-4. Push the parent branch: `git push origin <parent-branch>`. This still goes through the normal permission gate for `git push` (it's in the `ask` list) — that gate is about tool permission, not about whether the workflow calls for pushing, so don't route around it.
-5. Report progress the same way `/opsx:apply` does (completed tasks this session, `N/M tasks complete`), then either cut the next group's branch from the now-updated parent (back to step 3.1) or stop if all groups are done — suggest `/opsx:archive`.
+2. Run **Gate 3** (code-review) against the group's uncommitted diff per `.claude/docs/review-gates.md` — invoke the `code-review` skill. On a `CONFIRMED` finding, stop and ask the user whether to fix now or commit anyway; do not silently commit past one. On clean or `PLAUSIBLE`-only, continue.
+3. If the group's tasks included test creation or updates, run **Gate 4** (test-coverage-review) against the same diff per `.claude/docs/review-gates.md` — invoke the `test-coverage` skill. Same pause behavior on a `CONFIRMED` finding.
+4. Commit automatically — **do not wait for the user to ask**, this is the documented override. Use Conventional Commits format (`.claude/docs/git-conventions.md` → Commit Messages), and summarize in the body: what changed, why, how it was validated (including each gate's outcome), remaining risks (per the global AI Commit Discipline standard). If the pre-commit hook (typecheck/lint) fails, fix the root cause and recommit — never `--no-verify`.
+5. Checkout the parent branch and merge the group branch: `git merge --no-ff <group-branch>`.
+6. Push the parent branch: `git push origin <parent-branch>`. This still goes through the normal permission gate for `git push` (it's in the `ask` list) — that gate is about tool permission, not about whether the workflow calls for pushing, so don't route around it.
+7. Report progress the same way `/opsx:apply` does (completed tasks this session, `N/M tasks complete`, plus each gate's outcome), then either cut the next group's branch from the now-updated parent (back to step 3.1) or stop if all groups are done — suggest `/opsx:archive`.
 
 ## Exceptions
 
