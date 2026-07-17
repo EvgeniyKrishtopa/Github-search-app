@@ -13,7 +13,7 @@ Package manager is **yarn** (see `yarn.lock`). Built on Vite (`vite`, `@vitejs/p
   - Run a single test file: `yarn test src/path/File.test.tsx`
   - CI / single run: `yarn test:run` (or `yarn test:coverage` for coverage)
 - `yarn deploy` — builds then publishes `dist/` to GitHub Pages via `gh-pages` (base path is set via Vite's `base` config in `vite.config.ts`, not a `homepage` field)
-- `yarn lint` — ESLint 9 flat config (`eslint.config.js`)
+- `yarn lint` — ESLint 9 flat config (`eslint.config.mjs`)
 - `yarn format` — Prettier 3, writing in place
 
 Prettier config lives in `.prettierrc.json` (single quotes, trailing commas, `arrowParens: avoid`, 80 col).
@@ -44,10 +44,10 @@ Single-page app: search the GitHub repositories API and keep a rolling history o
 
 ## Conventions
 
-- **Path aliases:** imports are absolute from `src` (`baseUrl: "src"` in `tsconfig.json`), e.g. `import Form from 'components/Form'` — not relative `../../`. Match this in new files.
+- **Path aliases:** imports are absolute from `src` (`paths: { "*": ["./src/*"] }` in `tsconfig.json`, resolved by Vite via `resolve.tsconfigPaths: true` in `vite.config.ts`), e.g. `import Form from 'components/Form'` — not relative `../../`. Match this in new files.
 - **File pattern:** each component is a folder with `index.tsx` + `styles.module.scss` (CSS Modules). Global styles/vars are in `src/styles/`.
 - **Redux pieces** live in `store/`: `reposSlice.ts` (`createSlice` + `createAsyncThunk` — reducers, actions, and thunks in one file; action types are inferred, not hand-written), `store.ts` (`configureStore`, hydration, `RootState`/`AppDispatch`), `hooks.ts` (`useAppSelector`/`useAppDispatch`), `listenerMiddleware.ts` (localStorage persistence). When adding a new piece of state, add it to `reposSlice.ts`'s `initialState`/reducers/`extraReducers` — there is no separate constants or action-types file to keep in sync.
-- TypeScript `strict` is on but `noImplicitAny` is off. ESLint's `@typescript-eslint/no-explicit-any` is enabled (errors on explicit `any`). The GitHub API response is typed via `IGitHubRepo` (`typings/interfaces.ts`) rather than `any`. Prefer typing new code properly.
+- TypeScript `strict` and `noImplicitAny` are both on; ESLint's `@typescript-eslint/no-explicit-any` is also enabled (errors on explicit `any`). The GitHub API response is typed via `IGitHubRepo` (`typings/interfaces.ts`) rather than `any`. There is no `any` anywhere in `src/`.
 - Components are functional with hooks; `AccordionItem` is wrapped in `React.memo`.
 
 ## Git Conventions
