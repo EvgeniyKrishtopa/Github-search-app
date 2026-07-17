@@ -1,6 +1,5 @@
 {
   "permissions": {
-    "defaultMode": "acceptEdits",
     "allow": [
       "Bash(yarn typecheck:*)",
       "Bash(yarn lint:*)",
@@ -11,9 +10,8 @@
       "Bash(yarn info:*)",
       "Bash(yarn cache:*)",
       "Bash(npm info *)",
-      "Bash(openspec list *)",
-      "Bash(openspec status *)",
-      "Bash(openspec instructions *)",
+      "Bash(openspec:*)",
+      "Bash(pkill -f:*)",
       "Bash(cd:*)",
       "Bash(curl:*)",
       "Bash(node -p:*)",
@@ -53,9 +51,6 @@
       "Read(./yarn.lock)",
       "Read(./.env)",
       "Read(./.env.*)"
-    ],
-    "ask": [
-      "WebFetch"
     ],
     "additionalDirectories": [
       "/Users/eugenekrishtopa/Desktop/AI-assisted projects/Github-search-app/.claude/skills"
