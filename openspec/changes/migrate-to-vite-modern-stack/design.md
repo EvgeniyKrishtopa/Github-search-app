@@ -78,6 +78,12 @@ Today `ListRequests` renders the list, owns `localStorage` via two `useEffect`s,
 
 React 19 StrictMode double-invokes effects in development. Restoration must be safe to run twice — it replaces the session list rather than appending. This is specified (`search-history`: "Restoration is idempotent under repeated initialization") rather than left to chance, because the current code is only accidentally safe.
 
+### TypeScript compiler version bumps in step 1, not step 7
+
+Discovered during implementation: Vite 8's shipped `.d.ts` files (`vite/client`, `vite.config.ts`'s own types) use syntax `typescript@4.0.3` cannot parse — `tsc --noEmit` fails with syntax errors inside `node_modules/vite/types/*.d.ts` itself, before any project code is touched. Vite also requires `@types/node` `^20.19 || >=22.12`; the project pinned `^14.10.3`.
+
+The original plan (`### Finish TypeScript rather than "add" it`, below) assumed the compiler version was untouched until step 7's `noImplicitAny` cleanup. That assumption doesn't hold: the toolchain doesn't typecheck at all until `typescript` and `@types/node` move, so both bump in step 1.2/1.3 alongside the rest of the toolchain swap, not step 7. Step 7 remains responsible for `noImplicitAny` and clearing stray `any`.
+
 ### Finish TypeScript rather than "add" it
 
 TS is already on with `strict: true`. The gaps are `noImplicitAny: false`, `data: Array<any>` for the API response, and a lone `store/constants.js`. RTK closes most of these for free: `createSlice` infers action types, so `constants.js` and `actions/types.ts` disappear rather than needing conversion.
@@ -123,5 +129,5 @@ Deployment is verified at step 1 (`vite preview` with `base`) and again after st
 ## Open Questions
 
 - **Should `yarn install` failure be confirmed before starting?** The whole ordering argument rests on `node-sass` being the blocker. This is strongly evidenced (deprecated upstream, latest is 9.0.0, no Node 24 prebuild) but not empirically observed on this machine. Task 1.1 confirms it. If it installs cleanly, step 1 becomes less urgent and the ordering loosens — though the migration remains worth doing.
-- **Does `per_page=8` currently take effect?** In `?q=${repository}?&per_page=8` the `&` does separate parameters, so `per_page=8` likely applies and the stray `?` merely pollutes the search term. `CLAUDE.md` claims pagination "may not apply." Worth confirming against a real response before treating the fix as behavior-preserving.
+- ~~**Does `per_page=8` currently take effect?**~~ Resolved (task 3.5): confirmed against a live response — `curl "https://api.github.com/search/repositories?q=react&per_page=8"` returned exactly 8 items against a `total_count` in the millions. `per_page=8` was already taking effect; the stray `?` only polluted the search term, as suspected.
 - **React 19 or 18?** Assumed 19 (current). If a transitive dependency resists, 18 satisfies every requirement here — `react-redux@9` supports both.

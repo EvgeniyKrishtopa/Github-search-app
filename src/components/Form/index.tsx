@@ -1,14 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { FetchRepos } from 'store/actions/actions';
+import { fetchRepos } from 'store/reposSlice';
+import { useAppDispatch, useAppSelector } from 'store/hooks';
 import styles from './styles.module.scss';
-import { RootState } from 'store/reducers';
 
 const Form: React.FC = () => {
-  const dispatch = useDispatch();
-  const error = useSelector<RootState, null | string>(
-    ({ repos }) => repos.error,
-  );
+  const dispatch = useAppDispatch();
+  const error = useAppSelector(({ repos }) => repos.error);
 
   const [request, setRequest] = useState<string>('');
   const [errorResponse, setErrorResponse] = useState<null | string>(null);
@@ -20,7 +17,7 @@ const Form: React.FC = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (request) {
-      dispatch(FetchRepos(request));
+      dispatch(fetchRepos(request));
     }
 
     setRequest('');

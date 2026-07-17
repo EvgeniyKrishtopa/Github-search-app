@@ -1,20 +1,38 @@
 {
   "permissions": {
-    "defaultMode": "acceptEdits",
     "allow": [
-      "Bash(cd \"/Users/eugenekrishtopa/Desktop/AI-assisted projects/Mobile test setup/GreetingApp\")",
+      "Bash(yarn typecheck:*)",
+      "Bash(yarn lint:*)",
+      "Bash(yarn dev:*)",
+      "Bash(yarn preview:*)",
+      "Bash(yarn test:*)",
+      "Bash(yarn test:run:*)",
+      "Bash(yarn info:*)",
+      "Bash(yarn cache:*)",
+      "Bash(npm info *)",
+      "Bash(openspec:*)",
+      "Bash(pkill -f:*)",
+      "Bash(cd:*)",
+      "Bash(curl:*)",
+      "Bash(node -p:*)",
+      "Bash(node -e:*)",
+      "Bash(which:*)",
+      "Bash(cat:*)",
+      "Bash(mkdir:*)",
+      "Bash(echo:*)",
+      "Bash(sleep:*)",
+      "Bash(kill:*)",
+      "Bash(for *)",
       "Bash(git commit -m *)",
       "Bash(git checkout *)",
       "Bash(git status:*)",
       "Bash(git diff:*)",
-      "Bash(npm run:*)",
-      "Bash(pnpm run:*)",
-      "Bash(npm test)",
-      "Bash(npx tsc --noEmit)",
-      "Bash(git push:*)",
-      "Edit(./.claude/settings.json)",
-      "Read(//Users/eugenekrishtopa/Desktop/AI-assisted projects/**)",
-      "Edit(//Users/eugenekrishtopa/Desktop/AI-assisted projects/**)"
+      "Write",
+      "Edit",
+      "Write(./.claude/docs/**)",
+      "Edit(./.claude/docs/**)",
+      "Write(./.claude/skills/**)",
+      "Edit(./.claude/skills/**)"
     ],
     "deny": [
       "Read(**/.env)",
@@ -24,19 +42,18 @@
       "Bash(npm install:*)",
       "Bash(npm i:*)",
       "Bash(pnpm add:*)",
+      "Bash(yarn add:*)",
+      "Bash(screencapture:*)",
       "Read(./node_modules/**)",
       "Read(./build/**)",
+      "Read(./dist/**)",
       "Read(./coverage/**)",
       "Read(./yarn.lock)",
       "Read(./.env)",
       "Read(./.env.*)"
     ],
-    "ask": [
-      "Bash(git merge *)",
-      "WebFetch"
-    ],
     "additionalDirectories": [
-      "/Users/eugenekrishtopa/Desktop/AI-assisted projects/Mobile test setup/GreetingApp/.claude/skills"
+      "/Users/eugenekrishtopa/Desktop/AI-assisted projects/Github-search-app/.claude/skills"
     ]
   },
   "hooks": {
@@ -51,6 +68,18 @@
             "timeout": 120,
             "statusMessage": "Reviewing staged diff for architecture risks...",
             "prompt": "You are gating a `git commit` in the Github-search-app repo. The Bash tool call about to run is: $ARGUMENTS\n\n1. Read `.claude/agents/architecture-reviewer.md` in the repo root and follow its review criteria and verification bar exactly — do not invent your own criteria.\n2. Run `git diff --cached` to see the staged changes. If it is empty, there is nothing to review.\n3. Review the staged diff against those criteria. Only count a violation if you can trace a concrete consequence per the agent file's verification bar — do not escalate PLAUSIBLE-only concerns, this hook only escalates CONFIRMED issues.\n4. Output your result as the LAST thing in your response, and ONLY this JSON with no other text after it:\n   - One or more CONFIRMED violations: {\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"ask\", \"permissionDecisionReason\": \"<concise summary: what's violated, where, and why it matters>\"}}\n   - Clean review, or nothing staged: {\"hookSpecificOutput\": {\"hookEventName\": \"PreToolUse\", \"permissionDecision\": \"allow\"}}"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git merge *)",
+            "statusMessage": "Checking merge target branch...",
+            "command": "branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); if [ \"$branch\" = \"main\" ] || [ \"$branch\" = \"master\" ]; then printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"ask\",\"permissionDecisionReason\":\"Merging into %s requires confirmation.\"}}' \"$branch\"; else echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"allow\"}}'; fi"
+          },
+          {
+            "type": "command",
+            "if": "Bash(git push *)",
+            "statusMessage": "Checking push target and flags...",
+            "command": "branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null); if [ \"$branch\" = \"main\" ] || [ \"$branch\" = \"master\" ]; then printf '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"ask\",\"permissionDecisionReason\":\"Pushing while on %s requires confirmation.\"}}' \"$branch\"; elif echo \"$ARGUMENTS\" | grep -qE -- '(^|[[:space:]])(--force([[:space:]=]|$)|--force-with-lease|-f([[:space:]]|$))|\\bmain\\b|\\bmaster\\b'; then echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"ask\",\"permissionDecisionReason\":\"Force-push or a push targeting main/master requires confirmation.\"}}'; else echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"permissionDecision\":\"allow\"}}'; fi"
           }
         ]
       }
@@ -88,8 +117,5 @@
         ]
       }
     ]
-  },
-  "enabledPlugins": {
-    "superpowers@claude-plugins-official": true
   }
 }

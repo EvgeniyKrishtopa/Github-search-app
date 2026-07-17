@@ -1,5 +1,11 @@
+export interface IGitHubRepo {
+  id: number;
+  name: string;
+  html_url: string;
+}
+
 export interface ISession {
-  data: Array<any>;
+  data: Array<IGitHubRepo>;
   id: number;
   opened: boolean;
   request: string;

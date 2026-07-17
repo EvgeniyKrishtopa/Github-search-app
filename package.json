@@ -1,48 +1,34 @@
 {
-  "homepage": "http://EvgeniyKrishtopa.github.io/Github-search-app",
   "name": "github-search-app",
   "version": "1.0.0",
   "private": true,
   "packageManager": "yarn@1.22.22",
+  "resolutions": {
+    "vite": "8.1.4",
+    "@types/testing-library__dom": "6.14.0"
+  },
   "dependencies": {
-    "@testing-library/jest-dom": "^4.2.4",
-    "@testing-library/react": "^9.3.2",
-    "@testing-library/user-event": "^7.1.2",
-    "@types/node": "^14.10.3",
-    "@types/react-dom": "^16.9.8",
-    "@types/react-redux": "^7.1.9",
-    "@types/react-router": "^5.1.8",
-    "@types/react-router-dom": "^5.1.5",
-    "@types/redux-form": "^8.2.3",
-    "eslint-config-react-app": "^5.2.1",
-    "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-react": "^7.20.6",
-    "material-icons-react": "^1.0.4",
-    "node-sass": "^4.14.1",
+    "@reduxjs/toolkit": "^2.12.0",
+    "@types/node": "^26.1.1",
+    "@types/react-dom": "^19.2.3",
     "normalize.css": "^8.0.1",
-    "prettier": "2.1.2",
-    "react": "^16.13.1",
-    "react-dom": "^16.13.1",
-    "react-redux": "^7.2.1",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "^4.0.0-next.98",
-    "redux": "^4.0.5",
-    "redux-thunk": "^2.3.0"
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-redux": "^9.3.0"
   },
   "scripts": {
     "predeploy": "npm run build",
-    "deploy": "gh-pages -d build",
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "test:coverage": "CI=true react-scripts test --coverage --watchAll=false --passWithNoTests",
-    "eject": "react-scripts eject",
+    "deploy": "gh-pages -d dist",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src --ext .ts,.tsx",
+    "lint": "eslint .",
+    "format": "prettier --write .",
     "prepare": "husky"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
   },
   "browserslist": {
     "production": [
@@ -57,13 +43,25 @@
     ]
   },
   "devDependencies": {
-    "@types/react": "^16.9.49",
-    "@typescript-eslint/eslint-plugin": "^4.3.0",
-    "@typescript-eslint/parser": "^4.0.1",
-    "eslint-config-prettier": "^6.12.0",
-    "eslint-plugin-react-hooks": "^4.1.2",
+    "@testing-library/dom": "^10.4.1",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.2",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/react": "^19.2.17",
+    "@vitejs/plugin-react": "^6.0.3",
+    "@vitest/coverage-v8": "^4.1.10",
+    "eslint": "^9",
+    "eslint-config-prettier": "^9",
+    "eslint-plugin-react-hooks": "^5",
+    "eslint-plugin-react-refresh": "^0.4",
     "gh-pages": "^3.1.0",
     "husky": "^9.1.7",
-    "typescript": "^4.0.3"
+    "jsdom": "^29.1.1",
+    "prettier": "^3",
+    "sass": "^1.101.0",
+    "typescript": "^6.0.3",
+    "typescript-eslint": "^8",
+    "vite": "^8.1.4",
+    "vitest": "^4.1.10"
   }
 }
