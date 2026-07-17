@@ -1,9 +1,11 @@
 ---
 name: opsx-apply-git
-description: Implement tasks from an OpenSpec change in this repo, wrapped in the branch-per-group git workflow from .claude/docs/git-conventions.md (cut a branch per task group, auto-commit when green, merge back, push) and this repo's automated review gates from .claude/docs/review-gates.md (code-review then test-coverage-review before each group's commit). Use instead of the vendored /opsx:apply whenever the user wants to implement, continue, or work through OpenSpec tasks — the vendored skill never mentions branches, commits, or reviews, so used alone it leaves work sitting uncommitted (or unreviewed) on the parent branch.
+description: Implement one task group from an OpenSpec change in this repo, wrapped in the branch-per-group git workflow from .claude/docs/git-conventions.md (cut a branch per task group, auto-commit when green, merge back, push) and this repo's automated review gates from .claude/docs/review-gates.md (code-review then test-coverage-review before each group's commit). Stops after that one group's commit+merge+push — each invocation is one group, not the whole change — and auto-archives the change if that group was the last one. Use instead of the vendored /opsx:apply whenever the user wants to implement, continue, or work through OpenSpec tasks — the vendored skill never mentions branches, commits, or reviews, so used alone it leaves work sitting uncommitted (or unreviewed) on the parent branch.
 ---
 
-Implement tasks from an OpenSpec change, but — unlike the vendored `/opsx:apply` (`.claude/commands/opsx/apply.md`, `.claude/skills/openspec-apply-change/SKILL.md`) — do it inside the git workflow this repo's `.claude/docs/git-conventions.md` defines for OpenSpec work, and run the review gates `.claude/docs/review-gates.md` defines before each group's commit. Both files are the source of truth for their respective concerns; if either changes, follow the updated version over this summary.
+Implement one task group from an OpenSpec change, but — unlike the vendored `/opsx:apply` (`.claude/commands/opsx/apply.md`, `.claude/skills/openspec-apply-change/SKILL.md`) — do it inside the git workflow this repo's `.claude/docs/git-conventions.md` defines for OpenSpec work, and run the review gates `.claude/docs/review-gates.md` defines before each group's commit. Both files are the source of truth for their respective concerns; if either changes, follow the updated version over this summary.
+
+**One group per invocation.** Find the first task or sub-task without an implementation, work through the rest of that group's sub-tasks, and once the group is committed, merged, and pushed, stop and report — do not automatically start the next group's branch. Each `/opsx:apply` call is a session boundary: one group in, one group out. If the group you just finished was the last one with pending tasks, don't stop at reporting — archive the change in the same session (see step 5).
 
 This skill exists because the vendored `/opsx:apply` only implements tasks and checks boxes — it says nothing about branches, commits, or review, so followed on its own, a whole session's work (potentially several task groups) sits uncommitted and unreviewed on the parent feature branch until someone notices. That already happened once on this project (the branch/commit gap; the review gap is why Gates 3–4 below exist).
 
@@ -42,9 +44,24 @@ Once every sub-task in the group is done and the group's own verification passes
 4. Commit automatically — **do not wait for the user to ask**, this is the documented override. Use Conventional Commits format (`.claude/docs/git-conventions.md` → Commit Messages), and summarize in the body: what changed, why, how it was validated (including each gate's outcome), remaining risks (per the global AI Commit Discipline standard). If the pre-commit hook (typecheck/lint) fails, fix the root cause and recommit — never `--no-verify`.
 5. Checkout the parent branch and merge the group branch: `git merge --no-ff <group-branch>`.
 6. Push the parent branch: `git push origin <parent-branch>`. This still goes through the normal permission gate for `git push` (it's in the `ask` list) — that gate is about tool permission, not about whether the workflow calls for pushing, so don't route around it.
-7. Report progress the same way `/opsx:apply` does (completed tasks this session, `N/M tasks complete`, plus each gate's outcome), then either cut the next group's branch from the now-updated parent (back to step 3.1) or stop if all groups are done — suggest `/opsx:archive`.
+7. Re-check progress: `openspec instructions apply --change "<name>" --json` (or re-read `tasks.md`) to see whether any `- [ ]` tasks remain anywhere in the file, not just in the group you just finished.
+   - **Tasks remain:** report progress the same way `/opsx:apply` does (completed tasks this session, `N/M tasks complete`, plus each gate's outcome) and **stop here**. Do not cut the next group's branch in this session — that happens on the next `/opsx:apply` invocation, which re-enters at step 3 from the now-updated parent branch.
+   - **No tasks remain:** this was the last group. Don't stop at reporting — continue to step 5 to archive the change before ending the session.
+
+## 5. Auto-archive when the last group just landed
+
+Only reached when step 4.7 found zero remaining `- [ ]` tasks across the whole `tasks.md`.
+
+1. Invoke the `openspec-archive-change` skill (`Skill` tool) for this change, on the parent branch. Let it run its normal flow (change selection is already known — pass the name; it still checks artifact/task completion and delta-spec sync per its own steps).
+2. The archive step moves `changeRoot` into `openspec/changes/archive/`, which is an uncommitted change on the parent branch afterward. Commit it directly on the parent branch — no group branch needed, this isn't application code:
+   - `git add` the archive move (and any spec-sync changes under `openspec/specs/` if the archive flow synced specs).
+   - Commit with a `chore` type, e.g. `chore: archive <change-name>`, summarizing what was archived and whether specs were synced.
+   - This is a second, narrower override of "never commit without being asked," same justification as the group-commit override in `git-conventions.md`: the user has already asked, generally, for the archive-on-completion step to happen automatically as part of this flow.
+3. Push the parent branch: `git push origin <parent-branch>`.
+4. Report the full session: every group completed, final `N/N tasks complete`, and the archive location from the `openspec-archive-change` output.
 
 ## Exceptions
 
 - An unrelated fix surfaced while verifying a task (e.g. a config bug found mid-task) can land as its own focused commit, separate from the group commit — per `git-conventions.md`.
 - Destructive or history-rewriting git operations (force-push, `reset --hard`, deleting branches) are never part of this flow; if something goes wrong, stop and ask rather than trying to clean it up destructively.
+- If archiving in step 5 surfaces warnings (incomplete artifacts, unsynced delta specs) that `openspec-archive-change` would normally ask the user about, still ask — auto-archiving the *commit* is what this skill overrides, not the archive skill's own confirmation prompts for genuine ambiguity.

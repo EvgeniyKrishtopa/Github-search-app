@@ -135,7 +135,13 @@ e.g. `feature/codebase-update`, not `main`):
 2. Implement the group, commit once it is green (see above).
 3. Merge the group branch back into the parent feature branch.
 4. Push the parent feature branch to `origin`.
-5. Cut the next group's branch from the now-updated parent feature branch.
+5. Stop. The next group's branch is cut from the now-updated parent feature
+   branch on the *next* `/opsx:apply` invocation, not automatically within
+   the same one — one group's commit+merge+push is a session boundary, so
+   each group lands as its own reviewable checkpoint before more work
+   starts. If the group just committed was the last one with pending tasks,
+   archive the change in the same session instead of stopping (see
+   `opsx-apply-git`).
 
 This keeps each group bisectable and reviewable on its own branch while the
 parent feature branch always reflects the latest completed group.
