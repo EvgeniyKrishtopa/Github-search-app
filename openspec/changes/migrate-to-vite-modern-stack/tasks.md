@@ -72,9 +72,9 @@ Each numbered group ends green — installs, runs, tests pass — and is indepen
 
 ## 7. Finish TypeScript and clean up
 
-- [ ] 7.1 Set `noImplicitAny: true` in `tsconfig.json`. Fix the fallout — most should already be gone with `constants.js` and the untyped `configureStore` param.
-- [ ] 7.2 Grep for remaining `any` and `as any`. Each one is either typed properly or gets a comment explaining why it cannot be.
-- [ ] 7.3 Add a `typecheck` script (`tsc --noEmit`) and verify clean.
-- [ ] 7.4 Verify `package.json` has no unused dependencies left; confirm `normalize.css` is retained (it is genuinely imported in `App.tsx`).
+- [x] 7.1 Set `noImplicitAny: true` in `tsconfig.json`. Fix the fallout — most should already be gone with `constants.js` and the untyped `configureStore` param.
+- [x] 7.2 Grep for remaining `any` and `as any`. Each one is either typed properly or gets a comment explaining why it cannot be.
+- [x] 7.3 Add a `typecheck` script (`tsc --noEmit`) and verify clean.
+- [x] 7.4 Verify `package.json` has no unused dependencies left; confirm `normalize.css` is retained (it is genuinely imported in `App.tsx`).
 - [ ] 7.5 Run the full suite plus `yarn build`. Deploy and verify the live GitHub Pages URL loads under the base path.
-- [ ] 7.6 Final `CLAUDE.md` pass: read it top to bottom against the finished code and correct anything still describing the CRA-era project.
+- [x] 7.6 Final `CLAUDE.md` pass: read it top to bottom against the finished code and correct anything still describing the CRA-era project.
