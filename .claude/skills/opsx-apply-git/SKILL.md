@@ -36,7 +36,7 @@ A "group" is a numbered `##` section in `tasks.md` (e.g. `## 4. React 16 → 19 
 
 ## 4. Review, commit, merge, and push once the group is green
 
-Once every sub-task in the group is done and the group's own verification passes (installs, runs, tests — whatever the group's tasks specify, e.g. `yarn typecheck && yarn test:run`, plus `yarn lint` since pre-commit runs it):
+Once every sub-task in the group is done and the group's own verification passes (installs, runs, tests — whatever the group's tasks specify, e.g. `yarn typecheck`, plus `yarn lint` since pre-commit runs it):
 
 1. Review the diff (`git status -s`, `git diff --stat`) — confirm it's scoped to this group, no unrelated files.
 2. Run **Gate 3** (code-review) against the group's uncommitted diff per `.claude/docs/review-gates.md` — invoke the `code-review` skill. On a `CONFIRMED` finding, stop and ask the user whether to fix now or commit anyway; do not silently commit past one. On clean or `PLAUSIBLE`-only, continue.
