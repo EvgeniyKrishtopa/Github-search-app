@@ -11,10 +11,7 @@
     "@reduxjs/toolkit": "^2.12.0",
     "@types/node": "^26.1.1",
     "@types/react-dom": "^19.2.3",
-    "eslint-plugin-prettier": "^3.1.4",
-    "eslint-plugin-react": "^7.20.6",
     "normalize.css": "^8.0.1",
-    "prettier": "2.1.2",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",
     "react-redux": "^9.3.0"
@@ -29,11 +26,9 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint src --ext .ts,.tsx",
+    "lint": "eslint .",
+    "format": "prettier --write .",
     "prepare": "husky"
-  },
-  "eslintConfig": {
-    "extends": "react-app"
   },
   "browserslist": {
     "production": [
@@ -53,18 +48,19 @@
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/react": "^19.2.17",
-    "@typescript-eslint/eslint-plugin": "^4.3.0",
-    "@typescript-eslint/parser": "^4.0.1",
     "@vitejs/plugin-react": "^6.0.3",
     "@vitest/coverage-v8": "^4.1.10",
-    "eslint": "^7.32.0",
-    "eslint-config-prettier": "^6.12.0",
-    "eslint-plugin-react-hooks": "^4.1.2",
+    "eslint": "^9",
+    "eslint-config-prettier": "^9",
+    "eslint-plugin-react-hooks": "^5",
+    "eslint-plugin-react-refresh": "^0.4",
     "gh-pages": "^3.1.0",
     "husky": "^9.1.7",
     "jsdom": "^29.1.1",
+    "prettier": "^3",
     "sass": "^1.101.0",
     "typescript": "^6.0.3",
+    "typescript-eslint": "^8",
     "vite": "^8.1.4",
     "vitest": "^4.1.10"
   }

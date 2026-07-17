@@ -63,12 +63,12 @@ Each numbered group ends green — installs, runs, tests pass — and is indepen
 
 ## 6. ESLint 9 + Prettier 3
 
-- [ ] 6.1 Add `eslint` 9, `typescript-eslint`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`, `prettier` 3, `eslint-config-prettier`. Remove the old `@typescript-eslint/*` v4 packages, `eslint-plugin-prettier`, and `eslint-plugin-react` if unused.
-- [ ] 6.2 Create `eslint.config.js` (flat config). Delete the `eslintConfig` key from `package.json`.
-- [ ] 6.3 Add `lint` and `format` scripts — the project has never had a lint script; ESLint only ran implicitly through `react-scripts`.
-- [ ] 6.4 Run `yarn lint` and fix what it finds. Fix violations rather than widening rules.
-- [ ] 6.5 Run `yarn format`, confirm `.prettierrc.json` (single quotes, trailing commas, `arrowParens: avoid`, 80 col) still applies cleanly under Prettier 3.
-- [ ] 6.6 Update `CLAUDE.md`: replace "There is no separate lint script; ESLint runs through react-scripts."
+- [x] 6.1 Add `eslint` 9, `typescript-eslint`, `eslint-plugin-react-hooks`, `eslint-plugin-react-refresh`, `prettier` 3, `eslint-config-prettier`. Remove the old `@typescript-eslint/*` v4 packages, `eslint-plugin-prettier`, and `eslint-plugin-react` if unused.
+- [x] 6.2 Create `eslint.config.js` (flat config). Delete the `eslintConfig` key from `package.json`.
+- [x] 6.3 Add `lint` and `format` scripts — the project has never had a lint script; ESLint only ran implicitly through `react-scripts`.
+- [x] 6.4 Run `yarn lint` and fix what it finds. Fix violations rather than widening rules.
+- [x] 6.5 Run `yarn format`, confirm `.prettierrc.json` (single quotes, trailing commas, `arrowParens: avoid`, 80 col) still applies cleanly under Prettier 3.
+- [x] 6.6 Update `CLAUDE.md`: replace "There is no separate lint script; ESLint runs through react-scripts."
 
 ## 7. Finish TypeScript and clean up
 
