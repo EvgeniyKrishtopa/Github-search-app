@@ -1,9 +1,9 @@
 ---
 name: test-coverage
-description: Review the current diff in this repo for test coverage gaps and weak assertions, using the project's test-coverage-reviewer subagent (Fable model). Use before merging a change that alters behavior.
+description: Review the current diff in this repo for test coverage gaps and weak assertions, using the project's test-coverage-reviewer subagent. Use before merging a change that alters behavior.
 ---
 
-Review the current diff using the `test-coverage-reviewer` subagent (`.claude/agents/test-coverage-reviewer.md`, runs on Fable) and report the results with `ReportFindings`.
+Review the current diff using the `test-coverage-reviewer` subagent (`.claude/agents/test-coverage-reviewer.md`) and report the results with `ReportFindings`.
 
 ## 1. Determine what to review
 
@@ -22,8 +22,6 @@ Spawn the `test-coverage-reviewer` agent (`Agent` tool, `subagent_type: "test-co
 - That it's reviewing the Github-search-app repo per its own instructions and CLAUDE.md
 - Whether the diff belongs to an OpenSpec change (pass the change name if the user gave one, or if `openspec/changes/*/tasks.md` shows in-flight work touching the same files) so it can check tests against that spec's acceptance criteria
 - Any scope the user gave you (e.g. "just the reducer changes", a specific file)
-
-Note: `yarn test:coverage` currently fails on this repo (the script still calls the removed `react-scripts`; the Vitest migration is tracked separately in `openspec/changes/migrate-to-vite-modern-stack/tasks.md`, group 2). The subagent checks for this and reports it as a top-priority finding rather than silently reviewing against a broken runner — don't try to work around it yourself.
 
 ## 3. Report findings
 
