@@ -14,6 +14,7 @@ Package manager is **yarn** (see `yarn.lock`). Built on Vite (`vite`, `@vitejs/p
   - CI / single run: `yarn test:run` (or `yarn test:coverage` for coverage)
 - `yarn deploy` — builds then publishes `dist/` to GitHub Pages via `gh-pages` (base path is set via Vite's `base` config in `vite.config.ts`, not a `homepage` field)
 - `yarn lint` — ESLint 9 flat config (`eslint.config.mjs`)
+- `yarn typecheck` — `tsc --noEmit`; the husky pre-commit hook runs `yarn typecheck && yarn lint`, so both must pass before any commit
 - `yarn format` — Prettier 3, writing in place
 
 Prettier config lives in `.prettierrc.json` (single quotes, trailing commas, `arrowParens: avoid`, 80 col).
