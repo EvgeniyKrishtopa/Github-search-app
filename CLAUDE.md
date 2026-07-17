@@ -52,7 +52,7 @@ Single-page app: search the GitHub repositories API and keep a rolling history o
 
 ## Git Conventions
 
-Use small, focused branches and commits. Never mix unrelated changes. Read `.claude/docs/git-conventions.md` before creating a branch or a commit — it covers branch naming, Conventional Commits format, and AI commit discipline.
+Use small, focused branches and commits. Never mix unrelated changes. Read `.claude/docs/git-conventions.md` before creating a branch or a commit — it covers branch naming, Conventional Commits format, and AI commit discipline. Read `.claude/docs/review-gates.md` for the automated review gates (architecture, spec, code, test-coverage, harness) wired into the OpenSpec workflow.
 
 ## Notes / Known Issues
 

@@ -5,10 +5,10 @@ workflow, so architecture and spec problems surface before implementation,
 and code/test problems surface before a task group is committed.
 
 Per CLAUDE.md's Review Principles, "AI review is a sensor, not a final
-verdict — the human owns the merge." Every gate below surfaces its findings
-and pauses on a `CONFIRMED` finding for a human decision; none of them
-silently block progress or auto-fix code. `PLAUSIBLE`-only findings (or a
-clean review) do not pause anything.
+verdict — the human owns the merge." Gates 1–4 surface their findings and
+pause on a `CONFIRMED` finding for a human decision; none of them silently
+block progress or auto-fix code, and `PLAUSIBLE`-only findings (or a clean
+review) do not pause anything. Gate 5 is different by design — see below.
 
 The wrapper skills below (`opsx-propose-review`, `opsx-update-review`,
 `opsx-apply-git`) are the ones that actually run these gates — this file is
@@ -70,5 +70,33 @@ reviewed.
 **On a `CONFIRMED` finding:** show it to the user and ask whether to add or
 fix tests now or commit anyway.
 
-**On clean, or `PLAUSIBLE`-only:** proceed to commit, merge, and push as
-`opsx-apply-git` already does.
+**On clean, or `PLAUSIBLE`-only:** proceed to Gate 5 if this is the last
+group with pending tasks, otherwise proceed straight to commit, merge, and
+push as `opsx-apply-git` already does.
+
+## Gate 5 — harness-review at the end of a change
+
+**Trigger:** the *last* OpenSpec task group with pending tasks — determined
+right after Gate 4 (or Gate 3, if Gate 4 didn't apply) passes for a group,
+by checking whether any `- [ ]` remain anywhere else in `tasks.md` — but
+before that group's own commit (`opsx-apply-git`'s step 4.6). Groups that
+aren't the last one skip this gate entirely.
+
+**Action:** run the `harness-review` skill, scoped to the whole harness
+(`CLAUDE.md`, `.claude/agents/`, `.claude/skills/`, `.claude/docs/`), naming
+the change so the reviewer can check for anything the change's
+implementation should have updated in the harness but didn't.
+
+**This gate does not follow the CONFIRMED/PLAUSIBLE pause rule above.**
+Harness-review's purpose is suggesting actionable fixes, not just flagging
+risk, so every finding — either verdict — is shown to the user with its
+suggested fix, and the user chooses what to apply. Nothing is silently
+auto-applied; the group-commit override in `.claude/docs/git-conventions.md`
+covers a task group's own implementation commit, not harness config.
+
+**On a finding the user approves:** apply the fix and commit it as its own
+commit on the group branch (`chore: harness review — <summary>`), *before*
+the group's own implementation commit.
+
+**On clean, or the user declines every suggestion:** proceed straight to
+the group's own commit, merge, and push as `opsx-apply-git` already does.
