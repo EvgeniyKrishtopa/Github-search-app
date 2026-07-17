@@ -1,15 +1,15 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
-import { ChangeSessionOpenedStatus } from 'store/actions/actions';
+import { changeSessionOpenedStatus } from 'store/reposSlice';
+import { useAppDispatch } from 'store/hooks';
 import Repository from 'components/Repository';
 import styles from './styles.module.scss';
 import { ISession } from 'typings/interfaces';
 
 const RequestItem: React.FC<ISession> = ({ data, id, opened, request }) => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
 
   const changeOpenStatus = () => {
-    dispatch(ChangeSessionOpenedStatus(id));
+    dispatch(changeSessionOpenedStatus(id));
   };
 
   return (

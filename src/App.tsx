@@ -2,7 +2,7 @@ import React from 'react';
 import 'normalize.css';
 import 'styles/common.scss';
 import { Provider } from 'react-redux';
-import store from 'store/state';
+import store from 'store/store';
 import SearchPage from 'pages/SearchPage';
 import Header from 'components/Header';
 

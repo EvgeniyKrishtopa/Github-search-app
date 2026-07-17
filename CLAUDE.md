@@ -20,16 +20,16 @@ There is no separate lint script; ESLint runs through `react-scripts` (warnings 
 
 Single-page app: search the GitHub repositories API and keep a rolling history of the last 5 searches ("sessions"), each an expandable accordion, persisted to `localStorage`.
 
-**Data flow (Redux + thunk):**
-`Form` dispatches `FetchRepos(query)` → thunk calls `https://api.github.com/search/repositories` → on success dispatches `GET_REPOS_SUCCESS` with the results → the `repos` reducer prepends a new session and marks it `opened`.
+**Data flow (Redux Toolkit):**
+`Form` dispatches `fetchRepos(query)` (a `createAsyncThunk` in `store/reposSlice.ts`) → the thunk calls `https://api.github.com/search/repositories` → `store/reposSlice.ts`'s `extraReducers` handle `pending`/`fulfilled`/`rejected`: `fulfilled` prepends a new session and marks it `opened`.
 
-**State shape** — a single `repos` slice (`combineReducers` in `store/reducers/index.ts`). `IState = { loading, sessions: ISession[], error }`. `ISession = { request, data, opened, id }`.
+**State shape** — a single `repos` slice, combined in `store/store.ts` via `configureStore({ reducer: { repos: reposReducer } })`. `IState = { loading, sessions: ISession[], error }`. `ISession = { request, data, opened, id }`. `RootState`/`AppDispatch` are exported from `store/store.ts`; components read/dispatch through the typed `useAppSelector`/`useAppDispatch` hooks in `store/hooks.ts`, not `react-redux`'s untyped ones.
 
-**Session rules (business logic lives in the reducer, `store/reducers/reducers.ts`):**
-- `sessionCreator` caps history at **5** sessions and sets the newest one `opened: true`, all others `false`.
-- `sessionActiveHandler` (accordion toggle) is single-open: opening one closes the rest.
+**Session rules (business logic lives in `store/reposSlice.ts`, governed by Immer):**
+- `fetchRepos.fulfilled` caps history at **5** sessions and sets the newest one `opened: true`, all others `false`.
+- `changeSessionOpenedStatus` (accordion toggle) is single-open: opening one closes the rest.
 
-**Persistence** is handled entirely in `components/ListRequests/index.tsx` via two `useEffect`s — one writes `sessions` to `localStorage` on change, the other hydrates the store from `localStorage` on mount by dispatching `GetSessions`. There is no persistence middleware; do not add localStorage logic in the reducer or thunk.
+**Persistence** is handled by `createListenerMiddleware` in `store/listenerMiddleware.ts`, which writes `sessions` to `localStorage` whenever `fetchRepos.fulfilled` or `changeSessionOpenedStatus` is dispatched. Hydration happens once, at store creation: `store/store.ts` reads `localStorage` synchronously and passes it as `preloadedState` to `configureStore` — idempotent by construction, since there is no effect to double-invoke under StrictMode. `ListRequests` is pure presentation; do not reintroduce persistence `useEffect`s there.
 
 **Component layers:**
 - `src/index.tsx` mounts `App` via `createRoot` (`react-dom/client`) inside `React.StrictMode` — `ReactDOM.render` is removed in React 19, not just deprecated.
@@ -42,8 +42,8 @@ Single-page app: search the GitHub repositories API and keep a rolling history o
 
 - **Path aliases:** imports are absolute from `src` (`baseUrl: "src"` in `tsconfig.json`), e.g. `import Form from 'components/Form'` — not relative `../../`. Match this in new files.
 - **File pattern:** each component is a folder with `index.tsx` + `styles.module.scss` (CSS Modules). Global styles/vars are in `src/styles/`.
-- **Redux pieces** are split across `store/`: `constants.js` (action type strings), `actions/actions.ts`, `actions/types.ts` (discriminated union `ReposActionTypes`), `reducers/`. When adding an action, update all three (constant → type interface → creator + reducer case).
-- TypeScript `strict` is on but `noImplicitAny` is off and `no-explicit-any` is disabled; the GitHub API response is typed as `any` (`data: Array<any>`). Prefer typing new code properly rather than following the `any` precedent.
+- **Redux pieces** live in `store/`: `reposSlice.ts` (`createSlice` + `createAsyncThunk` — reducers, actions, and thunks in one file; action types are inferred, not hand-written), `store.ts` (`configureStore`, hydration, `RootState`/`AppDispatch`), `hooks.ts` (`useAppSelector`/`useAppDispatch`), `listenerMiddleware.ts` (localStorage persistence). When adding a new piece of state, add it to `reposSlice.ts`'s `initialState`/reducers/`extraReducers` — there is no separate constants or action-types file to keep in sync.
+- TypeScript `strict` is on but `noImplicitAny` is off and `no-explicit-any` is disabled. The GitHub API response is typed via `IGitHubRepo` (`typings/interfaces.ts`) rather than `any`. Prefer typing new code properly.
 - Components are functional with hooks; `AccordionItem` is wrapped in `React.memo`.
 
 ## Git Conventions

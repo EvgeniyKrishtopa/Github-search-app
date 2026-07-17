@@ -48,18 +48,18 @@ Each numbered group ends green — installs, runs, tests pass — and is indepen
 
 ## 5. Redux Toolkit
 
-- [ ] 5.1 Add `@reduxjs/toolkit`. Remove `redux-thunk` (RTK bundles it) and `redux` as a direct dependency.
-- [ ] 5.2 Type the GitHub response: add `IGitHubRepo` (`id`, `name`, `html_url` — the only fields consumed) in `typings/interfaces.ts`. Replace `data: Array<any>` and `repos: Array<any>`.
-- [ ] 5.3 Create `store/reposSlice.ts` with `createSlice`. Port `sessionCreator` and `sessionActiveHandler` **into the slice's reducers** so Immer governs them — do not copy them out as standalone helpers, or the dev-mode immutability middleware will throw on their in-place mutation.
-- [ ] 5.4 Replace `FetchRepos` with `createAsyncThunk`; map `pending` → `loading: true, error: null`, `fulfilled` → session creation + `loading: false`, `rejected` → `loading: false, error`. This is where groups 3.1–3.3 land naturally.
-- [ ] 5.5 Replace `store/state.ts` with RTK `configureStore` (devtools and thunk are built in — the manual `__REDUX_DEVTOOLS_EXTENSION_COMPOSE__` and its `window as any` cast go away). Export `RootState` and `AppDispatch`.
-- [ ] 5.6 Add typed `useAppSelector` / `useAppDispatch` hooks; replace the explicit `useSelector<RootState, T>` generics across components.
-- [ ] 5.7 Add `createListenerMiddleware` that writes session history to `localStorage` on session-mutating actions.
-- [ ] 5.8 Move hydration to store preload: read `localStorage` once, pass as `preloadedState` to `configureStore`. Idempotent by construction — StrictMode cannot double-apply it. Handle absent/malformed storage without throwing. (`search-history`: No stored history)
-- [ ] 5.9 Strip persistence from `ListRequests`: delete both `useEffect`s and the `currentSessions` mirror; render straight from the selector. The component becomes pure presentation.
-- [ ] 5.10 Delete `store/constants.js`, `store/actions/actions.ts`, `store/actions/types.ts`, `store/reducers/reducers.ts`, `store/reducers/index.ts`, `store/state.ts`.
-- [ ] 5.11 Run the full suite. **The tests must not change** — if a test needs editing, either behavior drifted or the test was over-coupled to the old shape. Diagnose before editing.
-- [ ] 5.12 Update `CLAUDE.md`: rewrite the Data flow, State shape, Persistence, and Redux-pieces sections. Remove the "there is no persistence middleware; do not add localStorage logic in the reducer or thunk" rule — this change deliberately overturns it (see `design.md`).
+- [x] 5.1 Add `@reduxjs/toolkit`. Remove `redux-thunk` (RTK bundles it) and `redux` as a direct dependency.
+- [x] 5.2 Type the GitHub response: add `IGitHubRepo` (`id`, `name`, `html_url` — the only fields consumed) in `typings/interfaces.ts`. Replace `data: Array<any>` and `repos: Array<any>`.
+- [x] 5.3 Create `store/reposSlice.ts` with `createSlice`. Port `sessionCreator` and `sessionActiveHandler` **into the slice's reducers** so Immer governs them — do not copy them out as standalone helpers, or the dev-mode immutability middleware will throw on their in-place mutation.
+- [x] 5.4 Replace `FetchRepos` with `createAsyncThunk`; map `pending` → `loading: true, error: null`, `fulfilled` → session creation + `loading: false`, `rejected` → `loading: false, error`. This is where groups 3.1–3.3 land naturally.
+- [x] 5.5 Replace `store/state.ts` with RTK `configureStore` (devtools and thunk are built in — the manual `__REDUX_DEVTOOLS_EXTENSION_COMPOSE__` and its `window as any` cast go away). Export `RootState` and `AppDispatch`.
+- [x] 5.6 Add typed `useAppSelector` / `useAppDispatch` hooks; replace the explicit `useSelector<RootState, T>` generics across components.
+- [x] 5.7 Add `createListenerMiddleware` that writes session history to `localStorage` on session-mutating actions.
+- [x] 5.8 Move hydration to store preload: read `localStorage` once, pass as `preloadedState` to `configureStore`. Idempotent by construction — StrictMode cannot double-apply it. Handle absent/malformed storage without throwing. (`search-history`: No stored history)
+- [x] 5.9 Strip persistence from `ListRequests`: delete both `useEffect`s and the `currentSessions` mirror; render straight from the selector. The component becomes pure presentation.
+- [x] 5.10 Delete `store/constants.js`, `store/actions/actions.ts`, `store/actions/types.ts`, `store/reducers/reducers.ts`, `store/reducers/index.ts`, `store/state.ts`.
+- [x] 5.11 Run the full suite. **The tests must not change** — if a test needs editing, either behavior drifted or the test was over-coupled to the old shape. Diagnose before editing.
+- [x] 5.12 Update `CLAUDE.md`: rewrite the Data flow, State shape, Persistence, and Redux-pieces sections. Remove the "there is no persistence middleware; do not add localStorage logic in the reducer or thunk" rule — this change deliberately overturns it (see `design.md`).
 
 ## 6. ESLint 9 + Prettier 3
 

@@ -1,48 +1,21 @@
-import { useState, useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import AccordionItem from 'components/AccordionItem';
-import { GetSessions } from 'store/actions/actions';
 import Loader from 'components/Loader';
+import { useAppSelector } from 'store/hooks';
 import styles from './styles.module.scss';
-import { ISession } from 'typings/interfaces';
-import { RootState } from 'store/reducers';
 
 const ListRequests = () => {
-  const [currentSessions, setCurrentSessions] = useState<Array<ISession>>([]);
-  const sessions = useSelector<RootState, Array<ISession>>(
-    ({ repos }) => repos.sessions,
-  );
-  const loading = useSelector<RootState, boolean>(({ repos }) => repos.loading);
-  const dispatch = useDispatch();
-
-  useEffect(() => {
-    if (sessions.length > 0) {
-      localStorage.setItem('sessions', JSON.stringify(sessions));
-      setCurrentSessions(sessions);
-    }
-    setCurrentSessions(sessions);
-  }, [sessions]);
-
-  useEffect(() => {
-    const sessions = JSON.parse(localStorage.getItem('sessions') || '[]') as
-      | Array<ISession>
-      | [];
-    if (sessions.length > 0) {
-      dispatch(GetSessions(sessions));
-    }
-  }, [dispatch]);
+  const sessions = useAppSelector(({ repos }) => repos.sessions);
+  const loading = useAppSelector(({ repos }) => repos.loading);
 
   return (
     <>
-      {currentSessions.length > 0 && (
-        <h2 className="text-center">Requests History</h2>
-      )}
+      {sessions.length > 0 && <h2 className="text-center">Requests History</h2>}
       {loading ? (
         <Loader />
       ) : (
         <ul className={styles.accordion}>
-          {currentSessions.length > 0 &&
-            currentSessions.map(({ data, id, opened, request }) => (
+          {sessions.length > 0 &&
+            sessions.map(({ data, id, opened, request }) => (
               <li key={id} className={styles.listItem}>
                 <AccordionItem
                   data={data}
