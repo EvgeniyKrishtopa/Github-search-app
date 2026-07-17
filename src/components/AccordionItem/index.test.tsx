@@ -1,14 +1,12 @@
 import { describe, it, expect } from 'vitest';
 import { render } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
-import { rootReducer } from 'store/reducers';
+import { setupStore } from 'store/store';
 import AccordionItem from './index';
 import { ISession } from 'typings/interfaces';
 
 const renderItem = (session: ISession) => {
-  const store = createStore(rootReducer, applyMiddleware(thunk));
+  const store = setupStore();
   return render(
     <Provider store={store}>
       <AccordionItem {...session} />

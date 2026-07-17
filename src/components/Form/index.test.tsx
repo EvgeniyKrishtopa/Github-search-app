@@ -1,13 +1,11 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
-import thunk from 'redux-thunk';
-import { rootReducer } from 'store/reducers';
+import { setupStore } from 'store/store';
 import Form from './index';
 
 const renderForm = () => {
-  const store = createStore(rootReducer, applyMiddleware(thunk));
+  const store = setupStore();
   return render(
     <Provider store={store}>
       <Form />
