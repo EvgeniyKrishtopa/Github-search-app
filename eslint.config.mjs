@@ -23,6 +23,7 @@ export default defineConfig([
         'error',
         { argsIgnorePattern: '^_' },
       ],
+      'no-console': 'error',
     },
   },
 ]);

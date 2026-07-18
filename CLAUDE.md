@@ -17,6 +17,21 @@ Package manager is **yarn** (see `yarn.lock`). Built on Vite (`vite`, `@vitejs/p
 - `yarn typecheck` — `tsc --noEmit`
 - `yarn format` — Prettier 3, writing in place
 
+## CI/CD
+
+GitHub Actions workflows live in `.github/workflows/`:
+
+- `ci.yml` — runs on every pull request (any target branch) and on push to `main`. Five parallel jobs: `typecheck` (`yarn typecheck`), `lint` (`yarn lint`), `test-coverage` (`yarn test:coverage`, enforcing the coverage thresholds below), `codeql` (GitHub CodeQL analysis — `init`/`analyze` only, no `autobuild`, since JS/TS needs none), and `dependency-health` (`yarn audit` + `yarn outdated`, both `continue-on-error` — report-only, never blocks a PR).
+- `cd.yml` — triggered by `workflow_run` whenever `ci.yml` completes on `main`; the deploy job itself only runs when that completion was a `push`-triggered run (never a `pull_request`-triggered one, even one whose head branch happens to be named `main`) that concluded successfully — both checked in the job's `if`, not the trigger. Builds once (`yarn build`) and publishes via the `gh-pages` package's CLI directly, not the `yarn deploy` script (which double-builds via its `predeploy` npm hook), pinning the exact commit CI validated (`workflow_run.head_sha`) and serializing overlapping deploys via a `concurrency` group.
+
+**Coverage threshold**: `vite.config.ts`'s `test.coverage.thresholds` enforces a minimum of 90% on statements, lines, and functions (current baseline ~92%). Branch coverage is intentionally left unenforced (baseline ~62%) — raising it is a separate, future change.
+
+**Node version**: pinned via `engines.node` in `package.json`, matching the version both workflows use.
+
+**Required vs. advisory**: on pull requests targeting `main`, `typecheck`/`lint`/`test-coverage` are required status checks and a CodeQL code-scanning rule blocks on high-or-higher security alerts / error-level alerts (enforced via a GitHub repo ruleset) — warning-level or lower-severity alerts don't block. On pull requests targeting any other branch, the same checks run and report, but nothing enforces blocking.
+
+**Known gap**: the actual default branch (`main`) still predates this toolchain (pre-Vite/Redux-Toolkit/React 19/ESLint 9), so `cd.yml` doesn't exist there yet and its `workflow_run` trigger cannot register — GitHub only evaluates that trigger from the default branch's copy of the workflow file. CI-side behavior is verified live; the CD deploy trigger itself won't be exercised until this repo's modernization work lands on `main`, a separate decision outside this pipeline's scope.
+
 ## Architecture
 
 Single-page app: search the GitHub repositories API and keep a rolling history of the last 5 searches ("sessions"), each an expandable accordion, persisted to `localStorage`.
