@@ -1,8 +1,8 @@
 ## 1. Repo prerequisites
 
-- [ ] 1.1 Add `coverage.thresholds` (`statements: 90, lines: 90, functions: 90`, branches intentionally unset) to `vite.config.ts`'s `test.coverage` config.
-- [ ] 1.2 Add an `engines.node` entry to `package.json` pinning the Node major version CI will use.
-- [ ] 1.3 Run `yarn test:coverage` locally and confirm it still passes against the new thresholds with the existing test suite (no new tests required).
+- [x] 1.1 Add `coverage.thresholds` (`statements: 90, lines: 90, functions: 90`, branches intentionally unset) to `vite.config.ts`'s `test.coverage` config.
+- [x] 1.2 Add an `engines.node` entry to `package.json` pinning the Node major version CI will use.
+- [x] 1.3 Run `yarn test:coverage` locally and confirm it still passes against the new thresholds with the existing test suite (no new tests required).
 
 ## 2. CI workflow
 

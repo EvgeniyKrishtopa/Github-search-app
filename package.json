@@ -3,6 +3,9 @@
   "version": "1.0.0",
   "private": true,
   "packageManager": "yarn@1.22.22",
+  "engines": {
+    "node": ">=24 <25"
+  },
   "resolutions": {
     "vite": "8.1.4",
     "@types/testing-library__dom": "6.14.0"
