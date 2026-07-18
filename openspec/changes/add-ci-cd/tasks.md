@@ -35,4 +35,4 @@
 
 ## 5. Documentation
 
-- [ ] 5.1 Once group 4 is fully verified, update `CLAUDE.md` to document the CI/CD pipeline: the CI/CD workflows and what they check, the 90% coverage threshold (statements/lines/functions, branches unenforced) and its baseline, the `engines.node` pin, and that `main`-targeted PRs require these checks (via branch protection) while other-branch PRs run them advisory-only.
+- [x] 5.1 Once group 4 is fully verified, update `CLAUDE.md` to document the CI/CD pipeline: the CI/CD workflows and what they check, the 90% coverage threshold (statements/lines/functions, branches unenforced) and its baseline, the `engines.node` pin, and that `main`-targeted PRs require these checks (via branch protection) while other-branch PRs run them advisory-only. Written with group 4's 4.1-4.5 verified and 4.6 explicitly noted as a known gap (CD's live deploy trigger pending the separate main-merge decision), per the user's decision to document the pipeline as currently implemented rather than wait.
