@@ -32,3 +32,7 @@
 - [ ] 4.4 Open a test pull request targeting `main` to confirm all CI jobs run and report as expected (including that a deliberately broken commit fails the correct checks and blocks merge).
 - [ ] 4.5 Open a second test pull request targeting a non-`main` branch (e.g. a feature branch) to confirm CI still runs and reports (no `branches` filter accidentally scoping `pull_request` to `main` only), and confirm its completion does not trigger the CD workflow.
 - [ ] 4.6 Merge the `main`-targeted test pull request (or push to `main`) and confirm the CD workflow runs via `workflow_run` only after CI succeeds, and that the site deploys correctly.
+
+## 5. Documentation
+
+- [ ] 5.1 Once group 4 is fully verified, update `CLAUDE.md` to document the CI/CD pipeline: the CI/CD workflows and what they check, the 90% coverage threshold (statements/lines/functions, branches unenforced) and its baseline, the `engines.node` pin, and that `main`-targeted PRs require these checks (via branch protection) while other-branch PRs run them advisory-only.

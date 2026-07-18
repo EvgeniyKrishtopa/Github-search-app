@@ -25,7 +25,7 @@ Correctness (typecheck, lint, test coverage) is currently only enforced by a loc
 ## Impact
 
 - **New files**: `.github/workflows/ci.yml`, `.github/workflows/cd.yml`.
-- **Modified files**: `vite.config.ts` (coverage thresholds), `package.json` (adds `engines.node`, pinning the Node version both workflows use).
+- **Modified files**: `vite.config.ts` (coverage thresholds), `package.json` (adds `engines.node`, pinning the Node version both workflows use), `CLAUDE.md` (documents the CI/CD pipeline once implementation is fully verified — see tasks.md group 5).
 - **Dependencies**: none new — CodeQL is a GitHub-native Action (`github/codeql-action`), no external account or secret required. CD calls the already-installed `gh-pages` package's CLI directly (`npx gh-pages -d dist`) rather than the `yarn deploy` script, to avoid that script's `predeploy`-triggered second build.
 - **Secrets**: the CD workflow needs push rights to the `gh-pages` branch — the default `GITHUB_TOKEN` covers this as long as the repo's Actions settings grant write permission (verified as part of implementation, not a new secret to create).
 - **No effect** on husky's local pre-commit hook — it stays as a fast local pre-check; CI becomes the authoritative, non-bypassable gate.
