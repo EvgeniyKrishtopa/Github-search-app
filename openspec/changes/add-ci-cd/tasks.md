@@ -16,13 +16,13 @@
 
 ## 3. CD workflow
 
-- [ ] 3.1 Create `.github/workflows/cd.yml` triggered on `workflow_run` for the CI workflow, filtered to `branches: [main]`, `types: [completed]`.
-- [ ] 3.2 Add a job-level `if: github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'success'` condition — the `event == 'push'` check is required, not just the conclusion check, so a `pull_request`-triggered CI run (including from a fork whose default branch happens to be named `main`) can never satisfy the gate.
-- [ ] 3.3 Add a `concurrency` group (e.g. `group: pages-deploy`) to the deploy job so overlapping runs queue instead of racing.
-- [ ] 3.4 Check out `github.event.workflow_run.head_sha` explicitly (not the default-branch HEAD the `workflow_run` event would otherwise check out) so the deployed commit is exactly the one CI validated, even if `main` has moved again since.
-- [ ] 3.5 Pin the same Node version from task 1.2 in the deploy job's `actions/setup-node` step, matching CI.
-- [ ] 3.6 Add a build step (`yarn build`) followed by a publish step calling the `gh-pages` package's CLI directly (`npx gh-pages -d dist -u "github-actions-bot <github-actions-bot@users.noreply.github.com>"`) — not `yarn deploy`, to avoid its `predeploy`/npm double-build path.
-- [ ] 3.7 Declare `permissions: contents: write` on the workflow so the default `GITHUB_TOKEN` can push to `gh-pages`.
+- [x] 3.1 Create `.github/workflows/cd.yml` triggered on `workflow_run` for the CI workflow, filtered to `branches: [main]`, `types: [completed]`.
+- [x] 3.2 Add a job-level `if: github.event.workflow_run.event == 'push' && github.event.workflow_run.conclusion == 'success'` condition — the `event == 'push'` check is required, not just the conclusion check, so a `pull_request`-triggered CI run (including from a fork whose default branch happens to be named `main`) can never satisfy the gate.
+- [x] 3.3 Add a `concurrency` group (e.g. `group: pages-deploy`) to the deploy job so overlapping runs queue instead of racing.
+- [x] 3.4 Check out `github.event.workflow_run.head_sha` explicitly (not the default-branch HEAD the `workflow_run` event would otherwise check out) so the deployed commit is exactly the one CI validated, even if `main` has moved again since.
+- [x] 3.5 Pin the same Node version from task 1.2 in the deploy job's `actions/setup-node` step, matching CI.
+- [x] 3.6 Add a build step (`yarn build`) followed by a publish step calling the `gh-pages` package's CLI directly (`npx gh-pages -d dist -u "github-actions-bot <github-actions-bot@users.noreply.github.com>" -r "https://x-access-token:${GITHUB_TOKEN}@github.com/<owner>/<repo>.git"`, with `GITHUB_TOKEN` from the step's `env: secrets.GITHUB_TOKEN`) — not `yarn deploy`, to avoid its `predeploy`/npm double-build path. The `-r` argument is required, not optional: `gh-pages` pushes from its own separate clone, which never sees the workspace's checkout-provided git credentials, so without an authenticated remote URL the push fails silently after a successful build.
+- [x] 3.7 Declare `permissions: contents: write` on the workflow so the default `GITHUB_TOKEN` can push to `gh-pages`.
 
 ## 4. Repo settings and verification
 
