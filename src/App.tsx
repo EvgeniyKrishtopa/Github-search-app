@@ -16,6 +16,3 @@ const App: React.FC = () => {
 };
 
 export default App;
-
-// intentional type error for CI verification (to be reverted)
-const __ciVerificationBrokenType: string = 12345;
