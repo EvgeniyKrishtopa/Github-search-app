@@ -4,6 +4,8 @@ The repo has no `.github/workflows/` today. Correctness is only enforced by a hu
 
 Current coverage baseline (measured via `yarn test:coverage`): statements 92.42%, functions 95.23%, lines 92.18%, branches 61.9%. A 90% gate on statements/lines/functions passes today with zero new tests; branches would fail today, so per the proposal it stays unenforced.
 
+**Discovered during implementation (group 4 verification): real `origin/main` predates this entire toolchain.** `main` is still on Create React App / React 16 / plain Redux, with no `vite.config.ts` and none of the `yarn typecheck`/`yarn lint`/`yarn test:coverage` scripts this pipeline depends on — it has not been updated since long before the Vite/Redux Toolkit/React 19/ESLint 9 modernization that this change (and the branch it was built on) assumes. This has two consequences: (1) CI/CD verification against a stand-in "trunk" branch (rather than real `main`) is the only way to test the pipeline today, since running it against real `main` would fail for toolchain-mismatch reasons unrelated to the pipeline itself; (2) task 4.6 (confirming CD's `workflow_run` trigger actually fires) is structurally unverifiable until `cd.yml` exists on real `main` — GitHub only evaluates `workflow_run` conditions from the workflow file on the default branch, unlike `pull_request`/`push`, which read from whichever branch has the event. Merging the accumulated modernization work into `main` is a separate, deliberate decision outside this change's scope.
+
 ## Goals / Non-Goals
 
 **Goals:**
