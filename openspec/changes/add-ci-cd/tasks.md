@@ -6,13 +6,13 @@
 
 ## 2. CI workflow
 
-- [ ] 2.1 Create `.github/workflows/ci.yml` triggered on `pull_request` (any base branch, no `branches` filter) and `push` (to `main` only).
-- [ ] 2.2 Add a `typecheck` job running `yarn typecheck`.
-- [ ] 2.3 Add a `lint` job running `yarn lint`.
-- [ ] 2.4 Add a `test-coverage` job running `yarn test:coverage`.
-- [ ] 2.5 Add a `codeql` job using `github/codeql-action`'s `init` → `analyze` steps (no `autobuild`), with `security-events: write` permission.
-- [ ] 2.6 Add a `dependency-health` job running `yarn audit` and `yarn outdated` as separate steps, each with `continue-on-error: true`, so findings are visible but never fail the job.
-- [ ] 2.7 Pin the same Node version from task 1.2 in every job's `actions/setup-node` step.
+- [x] 2.1 Create `.github/workflows/ci.yml` triggered on `pull_request` (any base branch, no `branches` filter) and `push` (to `main` only).
+- [x] 2.2 Add a `typecheck` job running `yarn typecheck`.
+- [x] 2.3 Add a `lint` job running `yarn lint`.
+- [x] 2.4 Add a `test-coverage` job running `yarn test:coverage`.
+- [x] 2.5 Add a `codeql` job using `github/codeql-action`'s `init` → `analyze` steps (no `autobuild`), with `security-events: write` permission.
+- [x] 2.6 Add a `dependency-health` job running `yarn audit` and `yarn outdated` as separate steps, each with `continue-on-error: true`, so findings are visible but never fail the job.
+- [x] 2.7 Pin the same Node version from task 1.2 in every job's `actions/setup-node` step.
 
 ## 3. CD workflow
 
