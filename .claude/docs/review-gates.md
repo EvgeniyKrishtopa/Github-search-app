@@ -35,14 +35,25 @@ the design artifact now or proceed anyway. Do not continue on to `specs`/
 **Trigger:** every artifact in `applyRequires` is `status: "done"` (for the
 `spec-driven` schema: proposal + design + specs + tasks all complete).
 
-**Action:** run the `spec-review` skill for the change.
+**Action:** run the `spec-review` skill for the change. Beyond finding
+gaps, the skill **classifies each `## N.` task group in `tasks.md` as
+`isolated` or `judgement-heavy`** (the read-only `spec-reviewer` decides the
+labels; the skill writes them as a trailing `<!-- isolated -->` /
+`<!-- judgement-heavy -->` comment on each group heading). This
+classification is independent of findings — it is recorded whenever the
+change is structurally valid, even on an otherwise clean review — and drives
+how far the apply-loop (`opsx-apply-git`) proceeds autonomously: consecutive
+`isolated` groups run without a human gate and land together in one PR, while
+a `judgement-heavy` group is implemented one at a time with the human in the
+loop and PR'd for review before merge. An unmarked group is treated as
+`judgement-heavy` downstream.
 
 **On a `CONFIRMED` finding:** show it to the user and ask whether to revise
 the relevant artifact(s) before declaring the change ready for
 implementation.
 
 **On clean, or `PLAUSIBLE`-only:** declare the change ready for
-implementation as usual.
+implementation as usual. (The classification is still recorded.)
 
 ## Gate 3 — code-review after a task group's implementation
 
@@ -71,8 +82,8 @@ reviewed.
 fix tests now or commit anyway.
 
 **On clean, or `PLAUSIBLE`-only:** proceed to Gate 5 if this is the last
-group with pending tasks, otherwise proceed straight to commit, merge, and
-push as `opsx-apply-git` already does.
+group with pending tasks, otherwise proceed straight to commit, push, and
+open the group's PR into the parent as `opsx-apply-git` already does.
 
 ## Gate 5 — harness-review at the end of a change
 
@@ -99,4 +110,5 @@ commit on the group branch (`chore: harness review — <summary>`), *before*
 the group's own implementation commit.
 
 **On clean, or the user declines every suggestion:** proceed straight to
-the group's own commit, merge, and push as `opsx-apply-git` already does.
+the group's own commit, push, and PR into the parent as `opsx-apply-git`
+already does.

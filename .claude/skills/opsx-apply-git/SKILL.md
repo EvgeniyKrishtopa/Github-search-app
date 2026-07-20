@@ -1,11 +1,11 @@
 ---
 name: opsx-apply-git
-description: Implement one task group from an OpenSpec change inside this repo's branch-per-group git workflow and review gates (.claude/docs/git-conventions.md, .claude/docs/review-gates.md), auto-committing when green and auto-archiving after the last group. Use instead of the vendored /opsx:apply whenever the user wants to implement, continue, or work through OpenSpec tasks — the vendored skill never branches, commits, or reviews, so used alone it leaves work sitting uncommitted (or unreviewed) on the parent branch.
+description: Implement the next run from an OpenSpec change — an autonomous batch of consecutive `isolated` task groups, or a single `judgement-heavy` group (classified by Gate 2 in tasks.md) — inside this repo's branch-per-group git workflow and review gates (.claude/docs/git-conventions.md, .claude/docs/review-gates.md), auto-committing each group when green, opening one pull request into the parent branch per run (never merging locally), and auto-archiving via its own PR after the last group. Use instead of the vendored /opsx:apply whenever the user wants to implement, continue, or work through OpenSpec tasks — the vendored skill never branches, commits, or reviews, so used alone it leaves work sitting uncommitted (or unreviewed) on the parent branch.
 ---
 
-Implement one task group from an OpenSpec change, but — unlike the vendored `/opsx:apply` (`.claude/commands/opsx/apply.md`, `.claude/skills/openspec-apply-change/SKILL.md`) — do it inside the git workflow this repo's `.claude/docs/git-conventions.md` defines for OpenSpec work, and run the review gates `.claude/docs/review-gates.md` defines before each group's commit. Both files are the source of truth for their respective concerns; if either changes, follow the updated version over this summary.
+Implement the next run from an OpenSpec change, but — unlike the vendored `/opsx:apply` (`.claude/commands/opsx/apply.md`, `.claude/skills/openspec-apply-change/SKILL.md`) — do it inside the git workflow this repo's `.claude/docs/git-conventions.md` defines for OpenSpec work, and run the review gates `.claude/docs/review-gates.md` defines before each group's commit. Both files are the source of truth for their respective concerns; if either changes, follow the updated version over this summary.
 
-**One group per invocation.** Find the first task or sub-task without an implementation, work through the rest of that group's sub-tasks, and once the group is committed, merged, and pushed, stop and report — do not automatically start the next group's branch. Each `/opsx:apply` call is a session boundary: one group in, one group out. If the group you just finished was the last one with pending tasks, don't stop at reporting — archive the change in the same session (see step 5).
+**One run per invocation.** A "run" is either an autonomous batch of consecutive `isolated` task groups or a single `judgement-heavy` group — Gate 2 marks each group in `tasks.md`, and §3 decides which case applies. Work the run to completion, and once it is committed (per group), pushed, and its one PR into the parent branch is opened, stop and report — do not automatically start the next run. Each `/opsx:apply` call is a session boundary: one run in, one PR out. If the run finished the last pending group, don't stop at reporting — archive the change in the same session (see step 5).
 
 This skill exists because the vendored `/opsx:apply` only implements tasks and checks boxes — it says nothing about branches, commits, or review, so followed on its own, a whole session's work (potentially several task groups) sits uncommitted and unreviewed on the parent feature branch until someone notices. That already happened once on this project (the branch/commit gap; the review gap is why Gates 3–5 below exist).
 
@@ -26,41 +26,62 @@ Follow the vendored flow's steps 1–5 unchanged:
 4. Read every file under `contextFiles`.
 5. Show schema, progress (`N/M tasks complete`), and the remaining tasks overview.
 
-## 3. Work one task group at a time
+## 3. Work the next run: an isolated batch, or one judgement-heavy group
 
-A "group" is a numbered `##` section in `tasks.md` (e.g. `## 4. React 16 → 19 and react-redux 7 → 9`), not an individual sub-task (`4.1`, `4.2`, ...). For the next group with pending tasks:
+A "group" is a numbered `##` section in `tasks.md` (e.g. `## 4. React 16 → 19 and react-redux 7 → 9`), not an individual sub-task (`4.1`, `4.2`, ...). How far one invocation goes depends on the classification Gate 2 wrote into `tasks.md`.
 
-1. **Cut a branch** off the current parent branch: `git checkout -b <type>/<short-description>`, typed and named per the "Branch Naming" section of `git-conventions.md` (lowercase kebab-case, e.g. `feature/react-19-react-redux-9` for the group above). Skip this if you're resuming mid-group on a branch already cut for it.
-2. **Implement the group's sub-tasks**, following the same guardrails as `/opsx:apply`: minimal, focused changes; mark each `- [ ]` → `- [x]` in `tasks.md` immediately on completion; pause and ask if a task is ambiguous, implementation reveals a design issue, or you hit an error/blocker.
-3. Treat a mid-group pause as a stopping point, not a failure to recover from — leave the branch checked out with whatever's committed or uncommitted, report status, and wait. Do not commit a half-finished group just to "close it out."
+**Read the marks first.** Gate 2 (spec-review, per `.claude/docs/review-gates.md`) tags each `## N.` group heading with a trailing `<!-- isolated -->` or `<!-- judgement-heavy -->` comment. **An unmarked group counts as judgement-heavy** — never auto-run work nobody classified. If *no* group in `tasks.md` carries a mark at all, the change predates classification (or Gate 2 never ran): treat every group as judgement-heavy, i.e. the one-group-per-invocation flow.
 
-## 4. Review, commit, merge, and push once the group is green
+Find the first group with pending `- [ ]` tasks; its mark decides which case you're in.
 
-Once every sub-task in the group is done and the group's own verification passes (installs, runs, tests — whatever the group's tasks specify, e.g. `yarn typecheck`, plus `yarn lint` since pre-commit runs it):
+### Case A — first pending group is `isolated`: run an autonomous batch
 
-1. Review the diff (`git status -s`, `git diff --stat`) — confirm it's scoped to this group, no unrelated files.
+Consecutive `isolated` groups are mechanical and well-specified, so they run without a human gate between them and land together in **one** PR.
+
+1. **Sync the parent, then cut one batch branch** off it: `git fetch origin` + `git pull --ff-only` (skip if the parent has no upstream yet — local-only), then `git checkout -b <type>/<short-description>` named for the batch per the "Branch Naming" section of `git-conventions.md` (e.g. `feature/<change>-isolated`). Skip this if you're resuming on a batch branch already cut for it.
+2. For each `isolated` group in turn, starting at the first pending one:
+   - **Implement its sub-tasks** (same guardrails as `/opsx:apply`: minimal, focused changes; mark each `- [ ]` → `- [x]` on completion). A truly isolated group shouldn't surface a design decision — if one does, the classification was wrong: stop, leave the group uncommitted, and tell the user it looks judgement-heavy after all.
+   - Once the group is green (its own verification + `yarn lint`), run the per-group gates against **that group's** diff, then **commit the group on the batch branch** — this is §4's steps 4.1–4.6 applied per group (Gate 3, Gate 4 if it touched tests, Gate 5 only if this is the last group in the whole change, then the commit). One commit per group keeps the batch bisectable.
+   - Look at the next pending group: `isolated` → continue the loop; `judgement-heavy`, or none left → **end the batch** and go to §4.7. Stopping *before* the judgement-heavy group is deliberate — it gets human review next session.
+3. Treat any mid-batch pause (a `CONFIRMED` gate finding, an error, an ambiguity) as a stopping point: leave the branch as-is with whatever's committed, report status, and wait. Do not commit a half-finished group to "close it out."
+
+### Case B — first pending group is `judgement-heavy`: one group, human in the loop
+
+This group needs a human's judgement before it lands, so it is **not** auto-run: do exactly one group, with the user engaged.
+
+1. Sync the parent and cut a single group branch off it (as in Case A step 1, but named for this one group, e.g. `feature/react-19-react-redux-9`).
+2. Announce that the group is judgement-heavy and why (from its classification rationale). Implement its sub-tasks with the standard guardrails, but **pause and ask on every design decision or ambiguity** rather than deciding for the user — that engagement is the whole point of the mark.
+3. Once green, run §4's steps 4.1–4.6 for this one group (Gate 3; Gate 4 if tests changed; Gate 5 if it's the last group; then commit), then go to §4.7. The PR is where the human's pre-merge review happens.
+
+## 4. Review + commit each group (4.1–4.6), then push + PR once per run (4.7–4.10)
+
+Steps **4.1–4.6 run per group** — §3 sends every group here (once for a single judgement-heavy group, repeatedly across an isolated batch) as soon as its sub-tasks are done and its own verification passes (installs, runs, tests per the group's tasks, plus `yarn lint` since pre-commit runs it). Steps **4.7–4.10 run once per run**, after §3's batch or single group has ended.
+
+1. Review the group's diff (`git status -s`, `git diff --stat`) — confirm it's scoped to this group, no unrelated files.
 2. Run **Gate 3** (code-review) against the group's uncommitted diff per `.claude/docs/review-gates.md` — invoke the `code-review` skill. On a `CONFIRMED` finding, stop and ask the user whether to fix now or commit anyway; do not silently commit past one. On clean or `PLAUSIBLE`-only, continue.
 3. If the group's tasks included test creation or updates, run **Gate 4** (test-coverage-review) against the same diff per `.claude/docs/review-gates.md` — invoke the `test-coverage` skill. Same pause behavior on a `CONFIRMED` finding.
-4. Determine whether this is the last group: check `tasks.md` (already up to date locally, even though uncommitted) for any `- [ ]` remaining outside the group you just finished. Remember the answer — it's used again in step 4.9.
-5. **If this is the last group**, run **Gate 5** (harness-review) per `.claude/docs/review-gates.md` before committing — invoke the `harness-review` skill, naming the change. Unlike Gates 3–4, it doesn't pause only on `CONFIRMED`; it shows every finding with a suggested fix and asks which to apply. If the user approves any, apply them and commit as their own commit on this group branch (`chore: harness review — <summary>`) now, before step 4.6. If this isn't the last group, or the user declines every suggestion, skip straight to step 4.6.
-6. Commit the group's own implementation automatically — **do not wait for the user to ask**, this is the documented override. Use Conventional Commits format (`.claude/docs/git-conventions.md` → Commit Messages), and summarize in the body: what changed, why, how it was validated (including each gate's outcome), remaining risks (per the global AI Commit Discipline standard). If the pre-commit hook (typecheck/lint) fails, fix the root cause and recommit — never `--no-verify`.
-7. Checkout the parent branch and merge the group branch: `git merge --no-ff <group-branch>`.
-8. Push the parent branch: `git push origin <parent-branch>`. A PreToolUse hook in `.claude/settings.json` gates `git push`: pushes from a feature branch are auto-allowed, while pushing from or force-pushing to `main`/`master` requires confirmation — that gate is about tool permission, not about whether the workflow calls for pushing, so never try to route around a confirmation the hook raises.
-9. Using the determination from step 4.4:
-   - **Tasks remain elsewhere:** report progress the same way `/opsx:apply` does (completed tasks this session, `N/M tasks complete`, plus each gate's outcome) and **stop here**. Do not cut the next group's branch in this session — that happens on the next `/opsx:apply` invocation, which re-enters at step 3 from the now-updated parent branch.
-   - **No tasks remain:** this was the last group. Don't stop at reporting — continue to step 5 to archive the change before ending the session.
+4. Determine whether this is the last group in the whole change: check `tasks.md` (already up to date locally, even though uncommitted) for any `- [ ]` remaining outside the group you just finished. Remember the answer — it's used again in step 4.10.
+5. **If this is the last group**, run **Gate 5** (harness-review) per `.claude/docs/review-gates.md` before committing — invoke the `harness-review` skill, naming the change. Unlike Gates 3–4, it doesn't pause only on `CONFIRMED`; it shows every finding with a suggested fix and asks which to apply. If the user approves any, apply them and commit as their own commit on this branch (`chore: harness review — <summary>`) now, before step 4.6. If this isn't the last group, or the user declines every suggestion, skip straight to step 4.6.
+6. Commit this group's own implementation automatically — **do not wait for the user to ask**, this is the documented override. Use Conventional Commits format (`.claude/docs/git-conventions.md` → Commit Messages), and summarize in the body: what changed, why, how it was validated (including each gate's outcome), remaining risks (per the global AI Commit Discipline standard). If the pre-commit hook (typecheck/lint) fails, fix the root cause and recommit — never `--no-verify`. **In an isolated batch, return to §3 Case A step 2 for the next group** — 4.7–4.10 only run once the batch ends.
+7. Push the run's branch to `origin`: `git push -u origin <branch>` (the batch branch, or the single group branch). A PreToolUse hook in `.claude/settings.json` gates `git push`: pushes from a feature branch are auto-allowed, while pushing from or force-pushing to `main`/`master` requires confirmation — that gate is about tool permission, not about whether the workflow calls for pushing, so never try to route around a confirmation the hook raises.
+8. Ensure the parent branch exists on `origin`. Check with `git ls-remote --exit-code --heads origin <parent-branch>`; if it's local-only, push it first (`git push -u origin <parent-branch>`) so the PR has a base to target.
+9. Open **one** PR from the run's branch into the parent: `gh pr create --base <parent-branch> --head <branch> --title "<conventional-commit-style summary>" --body "<summary>"`. The body covers **every group in this run** — what changed, why, how validated (incl. each gate's outcome), remaining risks. **For a judgement-heavy run (§3 Case B), flag it prominently** — lead the body with e.g. `⚠️ Judgement-heavy: needs careful human review before merge`, naming the decisions made. **Leave the PR open; do not merge it** — the human owns the merge. Report the PR URL `gh` prints.
+10. Using the determination from step 4.4:
+   - **Tasks remain elsewhere:** report progress the same way `/opsx:apply` does (groups completed this run, `N/M tasks complete`, each gate's outcome, plus the PR URL) and **stop here**. Do not start the next run in this session — that happens on the next `/opsx:apply` invocation, which re-enters at §3 and re-syncs the parent from `origin`. That sync only picks up this run's work once the human has merged its PR; if the PR is still open when the next invocation runs, say so rather than building the next run on a parent that's missing this one.
+   - **No tasks remain:** this run finished the change. Don't stop at reporting — continue to step 5 to archive the change before ending the session.
 
 ## 5. Auto-archive when the last group just landed
 
-Only reached when step 4.9 found zero remaining `- [ ]` tasks across the whole `tasks.md`.
+Only reached when step 4.10 found zero remaining `- [ ]` tasks across the whole `tasks.md` (the last group landed in this run — whether as a single judgement-heavy group or the tail of an isolated batch). This run's PR is already open (step 4.9); the archive lands as its **own separate PR** into the parent, just like a run — nothing commits directly to the parent branch.
 
-1. Invoke the `openspec-archive-change` skill (`Skill` tool) for this change, on the parent branch. Let it run its normal flow (change selection is already known — pass the name; it still checks artifact/task completion and delta-spec sync per its own steps).
-2. The archive step moves `changeRoot` into `openspec/changes/archive/`, which is an uncommitted change on the parent branch afterward. Commit it directly on the parent branch — no group branch needed, this isn't application code:
+1. You're still on this run's branch (its PR is open from step 4.9). Cut the archive branch straight off it — `git checkout -b chore/archive-<change-name>` — **not** off the parent: the parent doesn't yet contain this run (its PR isn't merged), so a parent-cut branch would show `tasks.md` as incomplete and the archive's completion check would balk. The archive PR is effectively stacked on the run's PR; once you merge the run's PR into the parent, the archive PR's diff reduces to just the archive move.
+2. Invoke the `openspec-archive-change` skill (`Skill` tool) for this change, on that archive branch. Let it run its normal flow (change selection is already known — pass the name; it still checks artifact/task completion and delta-spec sync per its own steps).
+3. The archive step moves `changeRoot` into `openspec/changes/archive/`, an uncommitted change on the archive branch afterward. Commit it there — this isn't application code:
    - `git add` the archive move (and any spec-sync changes under `openspec/specs/` if the archive flow synced specs).
    - Commit with a `chore` type, e.g. `chore: archive <change-name>`, summarizing what was archived and whether specs were synced.
    - This is a second, narrower override of "never commit without being asked," same justification as the group-commit override in `git-conventions.md`: the user has already asked, generally, for the archive-on-completion step to happen automatically as part of this flow.
-3. Push the parent branch: `git push origin <parent-branch>`.
-4. Report the full session: every group completed, final `N/N tasks complete`, and the archive location from the `openspec-archive-change` output.
+4. Push the archive branch (`git push -u origin chore/archive-<change-name>`) and open a PR into the parent (`gh pr create --base <parent-branch> --head chore/archive-<change-name> --title "chore: archive <change-name>" --body "<what was archived, whether specs were synced>"`). Leave it open like the group PRs — do not merge it.
+5. Report the full session: every group completed (with each PR URL), final `N/N tasks complete`, the archive location from the `openspec-archive-change` output, and the archive PR URL.
 
 ## Exceptions
 
