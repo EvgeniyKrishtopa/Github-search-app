@@ -20,3 +20,12 @@ Spawn the `spec-reviewer` agent (`Agent` tool, `subagent_type: "spec-reviewer"`,
 ## 3. Report findings
 
 The subagent returns its findings as text (file/section, summary, failure_scenario, category, verdict — see its own instructions). Convert that directly into a single `ReportFindings` call, most severe first, empty array if it found nothing. Do not re-review the artifacts yourself or add findings the subagent didn't surface — it already did the verification pass.
+
+## 4. Record the task-group classification in tasks.md
+
+The subagent also returns a **Classification** block — one `isolated`/`judgement-heavy` label per `## N.` group. Record these marks so `opsx-apply-git` can read them and decide how far it may run autonomously (see `.claude/docs/review-gates.md` Gate 2 and the apply-loop's §3):
+
+1. **Skip marking** if `openspec/changes/<change>/tasks.md` doesn't exist yet (a partial change — Gate 2 belongs to a complete artifact set), or if the subagent's `openspec validate <change> --strict` failed on a schema/structure finding. In either case say marks come once the change is structurally complete, and stop here.
+2. For each classified group, edit its heading in `tasks.md` to carry a trailing HTML-comment marker: `## N. <title>  <!-- isolated -->` or `## N. <title>  <!-- judgement-heavy -->`. **Idempotent:** if a marker is already there, replace it — never stack two. Touch only the heading line; leave every task line unchanged.
+3. Re-run `openspec validate <change> --strict` to confirm the markers didn't break the structure. If it now fails, revert the markers and report that instead.
+4. Report the classification (which groups are isolated vs judgement-heavy, with the reviewer's one-line rationale) alongside the findings, so the user sees where the apply-loop will pause for review.

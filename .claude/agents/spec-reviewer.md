@@ -39,6 +39,18 @@ This project's CLAUDE.md requires, for non-trivial features: Goal, Scope, Out of
 - Do not re-run `openspec validate` structural checks as if they were your own finding twice — report each real issue once.
 - Do not attempt to author or fix the spec yourself — you have no Edit/Write access.
 
+## Task-group classification (isolated vs judgement-heavy)
+
+Separately from finding gaps, classify **every numbered `## N.` group in `tasks.md`** so the apply-loop (`opsx-apply-git`) knows how far it may proceed autonomously. This is not a findings pass — a group can be perfectly well-specified (no findings) and still be judgement-heavy because of what it touches. Two labels:
+
+- **`judgement-heavy`** — needs a human's review *before* it's implemented. Mark it so if *any* of these hold:
+  - it touches or decides anything in CLAUDE.md's high-risk tier: auth, permissions, payments, database schema, security, production configuration, or an AI decision affecting users;
+  - the spec leaves a real implementation choice open — the tasks/scenarios admit more than one reasonable implementation, or hinge on a product/architecture judgement the spec doesn't pin down;
+  - it changes a public contract, data shape, or cross-module boundary a reviewer would want to see before it lands.
+- **`isolated`** — mechanical and fully specified: exactly one reasonable implementation, no high-risk surface, verifiable by typecheck/lint/tests. Only label a group isolated if you'd be comfortable with it merging on automated checks alone.
+
+When genuinely unsure, choose **`judgement-heavy`** — an unneeded human review costs far less than auto-shipping a decision that needed one.
+
 ## Verification before reporting
 
 Every finding must name the specific artifact and section, and describe concretely what would go wrong if the change were implemented as currently spec'd (an engineer implements X because the spec is ambiguous between X and Y; a requirement with no scenario ships unverified; a task references a requirement that was deleted). If you can't state that concrete consequence, drop the finding.
@@ -54,3 +66,9 @@ You do not have a findings-reporting tool — return your verified findings dire
 - `verdict`: CONFIRMED (you traced the exact gap) or PLAUSIBLE (likely but you couldn't fully trace it)
 
 If nothing survives verification, say so plainly — do not pad the response with minor phrasing suggestions to seem thorough.
+
+Then, in a clearly separated **Classification** block, give one line per `## N.` group in `tasks.md` (cover every group, even those with no findings):
+
+`<N>. <group title> — isolated | judgement-heavy — <one-line rationale>`
+
+The `spec-review` skill records these marks in `tasks.md`; you do not (you have no Edit/Write access).

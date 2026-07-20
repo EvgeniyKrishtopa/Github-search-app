@@ -44,7 +44,7 @@ Run in order as part of the OpenSpec workflow. See [`.claude/docs/review-gates.m
 | Skill | What it does | When to use |
 |---|---|---|
 | `/architecture-review` | **Gate 1.** Reviews a diff — or an OpenSpec `design.md` — for architecture risks: boundary violations, mixed concerns, god components/services, circular deps, duplicated domain logic, unnecessary global state. | Right after a `design.md` is drafted; before committing any change touching **2+ layers**; for any high-risk change. |
-| `/spec-review` | Reviews an OpenSpec change (proposal, design, specs, tasks) for internal consistency, testable requirements, and traceability. | After the full artifact set is drafted; before implementing or archiving a change. |
+| `/spec-review` | Reviews an OpenSpec change (proposal, design, specs, tasks) for internal consistency, testable requirements, and traceability, **and classifies each task group `isolated` vs `judgement-heavy`**, writing the mark into `tasks.md` for the apply-loop. | After the full artifact set is drafted; before implementing or archiving a change. |
 | `/code-review` | **Gate 3.** Correctness bugs + reuse/simplification/efficiency cleanups against the project's standards. `--fix` applies findings. | Before a task group's commit; before merging any change. |
 | `/test-coverage` | Reviews a diff for test-coverage gaps and weak assertions against the ≥90% thresholds and any acceptance criteria in `openspec/`. | After `/code-review`, before merging a behavior change. |
 | `/harness-review` | **Gate 5.** Reviews `CLAUDE.md`, `.claude/agents/`, `.claude/skills/`, `.claude/docs/` for stale claims and drift from authoring best practices. | Before a final task group's commit; when the harness setup changes. |
@@ -58,7 +58,7 @@ the branch-per-group git workflow. Used alone, `/opsx:*` leaves work uncommitted
 |---|---|---|
 | `/opsx-propose-review` | Proposes a new change, generating all artifacts in one step, wrapped with the architecture + spec review gates. | Starting a new feature/change proposal. |
 | `/opsx-update-review` | Revises an existing change's planning artifacts and re-runs the relevant gates to keep them coherent. | Reworking a change's plan after review feedback or a scope shift. |
-| `/opsx-apply-git` | Implements **one task group** inside the branch-per-group workflow: auto-commits when green, pushes the group branch, and opens a PR into the parent branch (left open for you to merge — never merges locally); auto-archives via its own PR after the last group. | Implementing / continuing / working through OpenSpec tasks. |
+| `/opsx-apply-git` | Implements **one run** inside the branch-per-group workflow: an autonomous batch of consecutive `isolated` groups, or a single `judgement-heavy` group human-in-the-loop (per Gate 2's marks). Auto-commits each group when green, pushes the branch, opens **one** PR into the parent (left open for you to merge — never merges locally); auto-archives via its own PR after the last group. | Implementing / continuing / working through OpenSpec tasks. |
 
 ### Utility skills
 
@@ -107,10 +107,10 @@ but the CLI is useful for inspection and health checks.
 ## Everyday workflow (how they chain)
 
 1. `/opsx-propose-review` — propose the change (runs architecture + spec gates).
-2. `/opsx-apply-git` — implement a task group; auto-commits when green, then pushes the group branch and opens a PR into the parent.
+2. `/opsx-apply-git` — implement the next run: a batch of consecutive `isolated` groups auto-run to one PR, or a single `judgement-heavy` group with you in the loop. Auto-commits each group when green, pushes, opens one PR into the parent.
 3. `/verify` (and `/run` or `/web-qa` for UI) — confirm it actually works.
-4. `/code-review` → `/test-coverage` → `/harness-review` — the gate sequence before the group's commit.
-5. You merge each group's PR on GitHub; the next `/opsx-apply-git` re-syncs the parent from that merge before cutting the next group.
-6. On the last group, `/opsx-apply-git` archives the change (`openspec archive`) via its own PR stacked on that group's PR.
+4. `/code-review` → `/test-coverage` → `/harness-review` — the gate sequence before each group's commit.
+5. You merge each run's PR on GitHub; the next `/opsx-apply-git` re-syncs the parent from that merge before starting the next run.
+6. On the last group, `/opsx-apply-git` archives the change (`openspec archive`) via its own PR stacked on that run's PR.
 
 Inspect anytime with `openspec list` / `openspec view` / `openspec doctor`.
