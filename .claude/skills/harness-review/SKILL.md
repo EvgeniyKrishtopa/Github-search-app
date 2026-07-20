@@ -1,13 +1,13 @@
 ---
 name: harness-review
-description: Review this repo's Claude Code harness — CLAUDE.md, .claude/agents/, .claude/skills/, .claude/docs/ — for stale claims, progressive-disclosure violations, weak skill descriptions, and cross-reference drift, using the project's harness-reviewer subagent (Fable model). Then offer to apply the fixes. Use when asked to review the harness/agent setup, or automatically as Gate 5 in .claude/docs/review-gates.md — after code-review and test-coverage-review, before a final task group's commit.
+description: Review this repo's Claude Code harness — CLAUDE.md, .claude/agents/, .claude/skills/, .claude/docs/, docs/COMMANDS.md — for stale claims, progressive-disclosure violations, weak skill descriptions, and cross-reference drift, using the project's harness-reviewer subagent (Fable model). Then offer to apply the fixes. Use when asked to review the harness/agent setup, or automatically as Gate 5 in .claude/docs/review-gates.md — after code-review and test-coverage-review, before a final task group's commit.
 ---
 
 Review the Claude Code harness in this repo using the `harness-reviewer` subagent (`.claude/agents/harness-reviewer.md`, runs on Fable), report the findings with `ReportFindings`, then — unlike the other review-gate skills, which are read-only sensors — offer to apply the fixes.
 
 ## 1. Determine scope
 
-Default scope is the whole harness: `CLAUDE.md`, every `.claude/agents/*.md`, every `.claude/skills/*/SKILL.md`, and every `.claude/docs/*.md`. If the user names a narrower scope (e.g. "just check the skill I just added"), pass that through to the subagent instead of the default.
+Default scope is the whole harness: `CLAUDE.md`, every `.claude/agents/*.md`, every `.claude/skills/*/SKILL.md`, every `.claude/docs/*.md`, and `docs/COMMANDS.md` (the command reference documenting the harness's own command surface). If the user names a narrower scope (e.g. "just check the skill I just added"), pass that through to the subagent instead of the default.
 
 ## 2. Delegate to the harness-reviewer subagent
 
