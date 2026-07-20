@@ -82,8 +82,11 @@ reviewed.
 fix tests now or commit anyway.
 
 **On clean, or `PLAUSIBLE`-only:** proceed to Gate 5 if this is the last
-group with pending tasks, otherwise proceed straight to commit, push, and
-open the group's PR into the parent as `opsx-apply-git` already does.
+group with pending tasks in the whole change; otherwise commit the group.
+A mid-batch `isolated` group then loops back to the next group (`opsx-apply-git`
+§3 Case A), while a single `judgement-heavy` group or the last group of a
+batch continues to push + open the run's PR — those steps (`opsx-apply-git`
+§4.7–4.10) run once per run, not once per group.
 
 ## Gate 5 — harness-review at the end of a change
 
