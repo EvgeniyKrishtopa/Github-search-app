@@ -129,22 +129,34 @@ group boundaries; it does not authorize committing outside that context.
 
 Do each group on its own short-lived branch cut from the parent feature
 branch (the branch active when the OpenSpec change's implementation began —
-e.g. `feature/codebase-update`, not `main`):
+e.g. `feature/codebase-update`, not `main`), and land it via a pull request
+into that parent — never by merging locally:
 
-1. Branch off the parent feature branch before starting the group's tasks.
-2. Implement the group, commit once it is green (see above).
-3. Merge the group branch back into the parent feature branch.
-4. Push the parent feature branch to `origin`.
-5. Stop. The next group's branch is cut from the now-updated parent feature
-   branch on the *next* `/opsx:apply` invocation, not automatically within
-   the same one — one group's commit+merge+push is a session boundary, so
-   each group lands as its own reviewable checkpoint before more work
-   starts. If the group just committed was the last one with pending tasks,
-   archive the change in the same session instead of stopping (see
-   `opsx-apply-git`).
+1. Before cutting the group branch, sync the local parent feature branch
+   with `origin` so it includes any earlier group PR that has since been
+   merged: `git fetch origin`, then fast-forward it (`git pull --ff-only`).
+   This assumes the previous group's PR was merged before you started this
+   one (see step 5). If the parent has no upstream yet (local-only), skip the
+   sync — step 4 pushes it.
+2. Branch off the parent feature branch, implement the group, and commit once
+   it is green (see above).
+3. Push the group branch to `origin` (`git push -u origin <group-branch>`).
+4. Make sure the parent branch exists on `origin`. If it only exists locally,
+   push it first (`git push -u origin <parent-branch>`) — a PR needs its base
+   branch on the remote.
+5. Open a pull request from the group branch into the parent branch
+   (`gh pr create --base <parent-branch> --head <group-branch>`) and **stop**.
+   Leave the PR open — do not merge it; the human owns the merge. One group's
+   commit + push + PR is a session boundary, so each group lands as its own
+   reviewable PR before more work starts. The next group's branch is cut from
+   the parent on the *next* `/opsx:apply` invocation (step 1 re-syncs it from
+   `origin`), after the human has merged this group's PR — not automatically
+   within the same session. If the group just committed was the last one with
+   pending tasks, archive the change in the same session instead of stopping
+   (see `opsx-apply-git`).
 
-This keeps each group bisectable and reviewable on its own branch while the
-parent feature branch always reflects the latest completed group.
+This keeps each group bisectable and reviewable as its own PR, while the
+parent feature branch only ever advances through reviewed, merged PRs.
 
 A group's sub-tasks are steps toward one reviewable unit of work; splitting
 them into per-sub-task commits fragments a single logical change and makes

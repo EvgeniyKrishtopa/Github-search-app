@@ -71,8 +71,8 @@ reviewed.
 fix tests now or commit anyway.
 
 **On clean, or `PLAUSIBLE`-only:** proceed to Gate 5 if this is the last
-group with pending tasks, otherwise proceed straight to commit, merge, and
-push as `opsx-apply-git` already does.
+group with pending tasks, otherwise proceed straight to commit, push, and
+open the group's PR into the parent as `opsx-apply-git` already does.
 
 ## Gate 5 — harness-review at the end of a change
 
@@ -99,4 +99,5 @@ commit on the group branch (`chore: harness review — <summary>`), *before*
 the group's own implementation commit.
 
 **On clean, or the user declines every suggestion:** proceed straight to
-the group's own commit, merge, and push as `opsx-apply-git` already does.
+the group's own commit, push, and PR into the parent as `opsx-apply-git`
+already does.
