@@ -17,6 +17,8 @@ Package manager is **yarn** (see `yarn.lock`). Built on Vite (`vite`, `@vitejs/p
 - `yarn typecheck` — `tsc --noEmit`
 - `yarn format` — Prettier 3, writing in place
 
+See `docs/COMMANDS.md` for the full Claude Code / OpenSpec command reference (slash commands, harness skills, `openspec` CLI) — beyond the yarn scripts above.
+
 ## CI/CD
 
 GitHub Actions workflows live in `.github/workflows/`:
