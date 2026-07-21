@@ -1,6 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { setupStore } from './store';
-import { addSession, toggleSession } from './searchHistorySlice';
+import { addSession, toggleSession } from 'features/searchHistory/searchHistorySlice';
 
 beforeEach(() => {
   localStorage.clear();

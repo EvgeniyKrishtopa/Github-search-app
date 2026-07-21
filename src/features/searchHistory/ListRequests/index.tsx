@@ -1,5 +1,5 @@
-import AccordionItem from 'components/AccordionItem';
-import { useAppSelector } from 'store/hooks';
+import AccordionItem from 'features/searchHistory/AccordionItem';
+import { useAppSelector } from 'app/hooks';
 import styles from './styles.module.scss';
 
 const ListRequests = () => {

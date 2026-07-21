@@ -36,33 +36,35 @@ GitHub Actions workflows live in `.github/workflows/`:
 
 ## Architecture
 
-Single-page app: search the GitHub repositories API and keep a rolling history of the last 5 searches ("sessions"), each an expandable accordion, persisted to `localStorage`.
+Single-page app: search the GitHub repositories API and keep a rolling history of the last 5 searches ("sessions"), each an expandable accordion. History persists to `localStorage` as **queries only** — a session stores no results; expanding one re-runs its search live via RTK Query, so results are "saved searches", never frozen snapshots.
 
-**Data flow (Redux Toolkit):**
-`Form` dispatches `fetchRepos(query)` (a `createAsyncThunk` in `store/reposSlice.ts`) → the thunk calls `https://api.github.com/search/repositories` → `store/reposSlice.ts`'s `extraReducers` handle `pending`/`fulfilled`/`rejected`: `fulfilled` prepends a new session and marks it `opened`.
+State is split by concern across three layers (server / domain / UI):
 
-**State shape** — a single `repos` slice, combined in `store/store.ts` via `configureStore({ reducer: { repos: reposReducer } })`. `IState = { loading, sessions: ISession[], error }`. `ISession = { request, data, opened, id }`. `RootState`/`AppDispatch` are exported from `store/store.ts`; components read/dispatch through the typed `useAppSelector`/`useAppDispatch` hooks in `store/hooks.ts`, not `react-redux`'s untyped ones.
+**Server state — RTK Query (`app/githubApi.ts`):** one `searchRepos({ id, q })` endpoint hits `https://api.github.com/search/repositories?q=…&per_page=8` and `transformResponse`s to `.items`. It owns the request lifecycle, loading, error, caching, and dedup. The arg carries the session `id` so the cache keys **per session, not per query text** — a new session with duplicate text fetches fresh, while re-expanding the same session hits cache (`keepUnusedDataFor: 300`).
 
-**Session rules (business logic lives in `store/reposSlice.ts`, governed by Immer):**
+**Domain state — `searchHistory` slice (`features/searchHistory/searchHistorySlice.ts`, governed by Immer):** `SearchHistoryState = { entries: ISession[], openId: number | null }`, where `ISession = { id, query }`.
 
-- `fetchRepos.fulfilled` caps history at **5** sessions and sets the newest one `opened: true`, all others `false`.
-- `changeSessionOpenedStatus` (accordion toggle) is single-open: opening one closes the rest.
+- `addSession(query)` assigns `id: Date.now()` in a `prepare` callback (identity lives in the slice, never in a component), prepends, caps history at **5** (discarding the oldest), and sets `openId` to the new entry.
+- `toggleSession(id)` is single-open, expressed in one reducer: `openId = openId === id ? null : id`.
+- A session is created on submit regardless of fetch outcome — a failed search still logs.
 
-**Persistence** is handled by `createListenerMiddleware` in `store/listenerMiddleware.ts`, which writes `sessions` to `localStorage` whenever `fetchRepos.fulfilled` or `changeSessionOpenedStatus` is dispatched. Hydration happens once, at store creation: `store/store.ts` reads `localStorage` synchronously and passes it as `preloadedState` to `configureStore` — idempotent by construction, since there is no effect to double-invoke under StrictMode. `ListRequests` is pure presentation; do not reintroduce persistence `useEffect`s there.
+**UI / data flow:** `Form` is thin — it only `dispatch(addSession(query))` and clears the input; it does not fetch. Each `AccordionItem` subscribes `useSearchReposQuery({ id, q: query }, { skip: !isOpen })`, so only the open session fetches, and loading/error are **per item**. `RootState`/`AppDispatch` are exported from `app/store.ts`; components read/dispatch through the typed `useAppSelector`/`useAppDispatch` hooks in `app/hooks.ts`, not `react-redux`'s untyped ones.
+
+**Persistence** is handled by `createListenerMiddleware` in `app/listenerMiddleware.ts`, which writes `entries` (queries only) to `localStorage` on `addSession` — **not** on `toggleSession`, since `openId` is ephemeral UI state. Hydration happens once, at store creation: `app/store.ts`'s `loadHistory` reads `localStorage` synchronously and passes it as `preloadedState` — restored history starts collapsed (`openId: null`), so no query fires on load. Idempotent by construction, since there is no effect to double-invoke under StrictMode. `loadHistory` maps each stored item to `{ id, query }`, tolerating a legacy pre-rework payload that stored the query under `request` (and extra `data`/`opened` fields). `ListRequests` is pure presentation; do not reintroduce persistence `useEffect`s there.
 
 **Component layers:**
 
 - `src/index.tsx` mounts `App` via `createRoot` (`react-dom/client`) inside `React.StrictMode` — `ReactDOM.render` is removed in React 19, not just deprecated.
 - `App` → `Header` + `SearchPage`
-- `SearchPage` → `Form` (input + dispatch) + `ListRequests` (history + persistence)
-- `ListRequests` → `AccordionItem` (per session) → `Repository` (per repo)
-- `Loader` shows while `loading` is true.
+- `SearchPage` → `Form` (input + dispatch) + `ListRequests` (history)
+- `ListRequests` → `AccordionItem` (per session, subscribes + toggles) → `Repository` (per repo)
+- `Loader` shows inside the open `AccordionItem` while its query is in flight (per-item, not global).
 
 ## Conventions
 
-- **Path aliases:** imports are absolute from `src` (`paths: { "*": ["./src/*"] }` in `tsconfig.json`, resolved by Vite via `resolve.tsconfigPaths: true` in `vite.config.ts`), e.g. `import Form from 'components/Form'` — not relative `../../`. Match this in new files.
+- **Path aliases:** imports are absolute from `src` (`paths: { "*": ["./src/*"] }` in `tsconfig.json`, resolved by Vite via `resolve.tsconfigPaths: true` in `vite.config.ts`), e.g. `import Form from 'features/searchHistory/Form'` — not relative `../../`. Match this in new files.
 - **File pattern:** each component is a folder with `index.tsx` + `styles.module.scss` (CSS Modules). Global styles/vars are in `src/styles/`.
-- **Redux pieces** live in `store/`: `reposSlice.ts` (`createSlice` + `createAsyncThunk` — reducers, actions, and thunks in one file; action types are inferred, not hand-written), `store.ts` (`configureStore`, hydration, `RootState`/`AppDispatch`), `hooks.ts` (`useAppSelector`/`useAppDispatch`), `listenerMiddleware.ts` (localStorage persistence). When adding a new piece of state, add it to `reposSlice.ts`'s `initialState`/reducers/`extraReducers` — there is no separate constants or action-types file to keep in sync.
+- **Feature-oriented layout:** `app/` holds store infrastructure — `store.ts` (`configureStore`, `loadHistory` hydration, `RootState`/`AppDispatch`), `hooks.ts` (`useAppSelector`/`useAppDispatch`), `listenerMiddleware.ts` (localStorage persistence), and `githubApi.ts` (the RTK Query service — a shared service, not a peer feature). `features/searchHistory/` holds the `searchHistorySlice.ts` domain slice plus its UI (`Form`, `ListRequests`, `AccordionItem`, `Repository`). Shared dumb UI (`Header`, `Loader`) stays in `components/`, and the `SearchPage` route composition lives in `pages/SearchPage/`. Server-state code (`githubApi`) and domain-state code (`searchHistorySlice`) are separate; when adding state, decide which layer owns it — RTK Query for server data, the slice for domain/UI state — there is no separate constants or action-types file to keep in sync.
 - TypeScript `strict` and `noImplicitAny` are both on; ESLint's `@typescript-eslint/no-explicit-any` is also enabled (errors on explicit `any`). The GitHub API response is typed via `IGitHubRepo` (`typings/interfaces.ts`) rather than `any`. There is no `any` anywhere in `src/`.
 - Components are functional with hooks; `AccordionItem` is wrapped in `React.memo`.
 

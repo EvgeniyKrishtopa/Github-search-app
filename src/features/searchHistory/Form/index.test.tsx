@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { render, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { setupStore } from 'store/store';
+import { setupStore } from 'app/store';
 import Form from './index';
 
 const renderForm = () => {

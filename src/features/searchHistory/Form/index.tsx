@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { addSession } from 'store/searchHistorySlice';
-import { useAppDispatch } from 'store/hooks';
+import { addSession } from 'features/searchHistory/searchHistorySlice';
+import { useAppDispatch } from 'app/hooks';
 import styles from './styles.module.scss';
 
 const Form: React.FC = () => {

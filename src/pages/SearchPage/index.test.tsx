@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { setupStore } from 'store/store';
+import { setupStore } from 'app/store';
 import SearchPage from './index';
 
 const jsonResponse = (items: Array<Record<string, unknown>>) =>

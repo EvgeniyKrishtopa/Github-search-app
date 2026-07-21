@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { setupStore } from 'store/store';
+import { setupStore } from 'app/store';
 import ListRequests from './index';
 
 describe('ListRequests', () => {

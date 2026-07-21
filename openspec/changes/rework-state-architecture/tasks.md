@@ -27,12 +27,12 @@
 
 ## 4. Move to the feature-oriented layout (mechanical, behavior-preserving)  <!-- isolated -->
 
-- [ ] 4.1 Move `store/store.ts`, `store/hooks.ts`, `store/listenerMiddleware.ts`, and `store/githubApi.ts` into `src/app/`.
-- [ ] 4.2 Move `searchHistorySlice.ts` and the `Form`, `ListRequests`, `AccordionItem`, `Repository` component folders into `src/features/searchHistory/`; leave `Header` and `Loader` in `src/components/`.
-- [ ] 4.3 Update alias imports across `src/` to the new module names (no path-depth changes — aliases resolve by name); move each test file alongside its moved source.
-- [ ] 4.4 Verify: `yarn typecheck`, `yarn lint`, `yarn test:coverage` pass unchanged from group 3 (this group changes no behavior).
+- [x] 4.1 Move `store/store.ts`, `store/hooks.ts`, `store/listenerMiddleware.ts`, and `store/githubApi.ts` into `src/app/`.
+- [x] 4.2 Move `searchHistorySlice.ts` and the `Form`, `ListRequests`, `AccordionItem`, `Repository` component folders into `src/features/searchHistory/`; leave `Header` and `Loader` in `src/components/`.
+- [x] 4.3 Update alias imports across `src/` to the new module names (no path-depth changes — aliases resolve by name); move each test file alongside its moved source.
+- [x] 4.4 Verify: `yarn typecheck`, `yarn lint`, `yarn test:coverage` pass unchanged from group 3 (this group changes no behavior).
 
 ## 5. Update project documentation to match the new architecture  <!-- isolated -->
 
-- [ ] 5.1 Update `CLAUDE.md` (Architecture, State shape, Session rules, Persistence, Component layers, Conventions/Redux pieces) to describe the `githubApi` service, the `searchHistory` slice (`entries`/`openId`), per-item fetching via `useSearchReposQuery`, query-only persistence, the live saved-searches behavior, and the `app/` + `features/searchHistory/` layout — replacing all references to the single `repos` slice, `reposSlice.ts`, `fetchRepos`, `IState`, and the old `ISession` shape.
-- [ ] 5.2 Verify: `yarn typecheck`, `yarn lint`, `yarn test:run` pass (no code change expected; confirms docs-only edits didn't break anything).
+- [x] 5.1 Update `CLAUDE.md` (Architecture, State shape, Session rules, Persistence, Component layers, Conventions/Redux pieces) to describe the `githubApi` service, the `searchHistory` slice (`entries`/`openId`), per-item fetching via `useSearchReposQuery`, query-only persistence, the live saved-searches behavior, and the `app/` + `features/searchHistory/` layout — replacing all references to the single `repos` slice, `reposSlice.ts`, `fetchRepos`, `IState`, and the old `ISession` shape.
+- [x] 5.2 Verify: `yarn typecheck`, `yarn lint`, `yarn test:run` pass (no code change expected; confirms docs-only edits didn't break anything).

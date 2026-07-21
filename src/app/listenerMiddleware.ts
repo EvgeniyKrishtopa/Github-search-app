@@ -1,5 +1,5 @@
 import { createListenerMiddleware } from '@reduxjs/toolkit';
-import { addSession } from './searchHistorySlice';
+import { addSession } from 'features/searchHistory/searchHistorySlice';
 import type { RootState } from './store';
 
 export const listenerMiddleware = createListenerMiddleware();
