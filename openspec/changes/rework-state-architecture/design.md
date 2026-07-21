@@ -56,7 +56,7 @@ RTK Query's default eviction is 60s after the last subscriber unsubscribes. With
 
 ### D5: Persistence is forward-compatible with the old payload
 
-The `localStorage` loader reads only `{ id, query }` from each stored entry and ignores any extra fields. An old-shape history (with `data`/`opened`) still restores its queries; results simply re-fetch on expand. No migration script is needed.
+The `localStorage` loader (`loadHistory`) reconstructs `{ id, query }` from each stored entry and ignores any extra fields. Because the old shape stored the query text under `request` (not `query`), the loader reads the query as `query ?? request`, so an old-shape history (with `request`/`data`/`opened`) still restores its queries; results simply re-fetch on expand. Entries missing a numeric `id` or any query text are skipped. No migration script is needed.
 
 ### D6: A submitted search is logged regardless of fetch outcome (accepted behavior change)
 
