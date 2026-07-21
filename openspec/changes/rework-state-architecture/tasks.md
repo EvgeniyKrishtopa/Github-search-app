@@ -1,17 +1,17 @@
 ## 1. Add the githubApi server-state service (additive)  <!-- isolated -->
 
-- [ ] 1.1 Create `src/store/githubApi.ts` with `createApi` (`reducerPath: 'githubApi'`, `fetchBaseQuery({ baseUrl: 'https://api.github.com' })`) and one `searchRepos` query endpoint whose arg is `{ id: number; q: string }` (keyed per session id — design D1): `query: ({ q }) => \`/search/repositories?q=${encodeURIComponent(q)}&per_page=8\``, `transformResponse: (r: { items: IGitHubRepo[] }) => r.items`, and a raised `keepUnusedDataFor` (300s) per design D4.
-- [ ] 1.2 Export the generated `useSearchReposQuery` hook.
-- [ ] 1.3 Register `githubApi.reducer` under `githubApi.reducerPath` and concat `githubApi.middleware` in `src/store/store.ts` (leave the existing `repos` reducer and listener in place — this group is purely additive).
-- [ ] 1.4 Add `src/store/githubApi.test.ts` covering: URL/query encoding (query with a reserved char is encoded, no extra param injected), `per_page=8`, `transformResponse` returning `items`, and that two args with the same `q` but different `id` produce distinct cache entries (each fires its own request).
-- [ ] 1.5 Verify: `yarn typecheck`, `yarn lint`, `yarn test:run` all pass.
+- [x] 1.1 Create `src/store/githubApi.ts` with `createApi` (`reducerPath: 'githubApi'`, `fetchBaseQuery({ baseUrl: 'https://api.github.com' })`) and one `searchRepos` query endpoint whose arg is `{ id: number; q: string }` (keyed per session id — design D1): `query: ({ q }) => \`/search/repositories?q=${encodeURIComponent(q)}&per_page=8\``, `transformResponse: (r: { items: IGitHubRepo[] }) => r.items`, and a raised `keepUnusedDataFor` (300s) per design D4.
+- [x] 1.2 Export the generated `useSearchReposQuery` hook.
+- [x] 1.3 Register `githubApi.reducer` under `githubApi.reducerPath` and concat `githubApi.middleware` in `src/store/store.ts` (leave the existing `repos` reducer and listener in place — this group is purely additive).
+- [x] 1.4 Add `src/store/githubApi.test.ts` covering: URL/query encoding (query with a reserved char is encoded, no extra param injected), `per_page=8`, `transformResponse` returning `items`, and that two args with the same `q` but different `id` produce distinct cache entries (each fires its own request).
+- [x] 1.5 Verify: `yarn typecheck`, `yarn lint`, `yarn test:run` all pass.
 
 ## 2. Add the searchHistory domain slice (additive)  <!-- isolated -->
 
-- [ ] 2.1 Reshape `typings/interfaces.ts`: `ISession = { id: number; query: string }` (no `data`, no `opened`); add `SearchHistoryState = { entries: ISession[]; openId: number | null }`; remove the old `IState`.
-- [ ] 2.2 Create `src/store/searchHistorySlice.ts` with `initialState = { entries: [], openId: null }` and reducers: `addSession` (with a `prepare` callback assigning `id: Date.now()` — design D2 — that prepends the entry, caps `entries` at 5 by discarding the oldest, and sets `openId` to the new id) and `toggleSession(id)` (the single-open branch `state.openId = state.openId === id ? null : id` — design D3).
-- [ ] 2.3 Add `src/store/searchHistorySlice.test.ts` covering: `addSession` stores query only and prepends newest-first; cap-at-5 discards the oldest and keeps the newest; `addSession` sets `openId` to the new entry; `toggleSession` opens a collapsed session, collapses the open one, and enforces single-open; id assignment happens in the reducer (dispatching the plain query yields a numeric id).
-- [ ] 2.4 Verify: `yarn typecheck`, `yarn lint`, `yarn test:run` all pass (old `repos` slice still drives the UI at this point).
+- [x] 2.1 Reshape `typings/interfaces.ts`: `ISession = { id: number; query: string }` (no `data`, no `opened`); add `SearchHistoryState = { entries: ISession[]; openId: number | null }`; remove the old `IState`.
+- [x] 2.2 Create `src/store/searchHistorySlice.ts` with `initialState = { entries: [], openId: null }` and reducers: `addSession` (with a `prepare` callback assigning `id: Date.now()` — design D2 — that prepends the entry, caps `entries` at 5 by discarding the oldest, and sets `openId` to the new id) and `toggleSession(id)` (the single-open branch `state.openId = state.openId === id ? null : id` — design D3).
+- [x] 2.3 Add `src/store/searchHistorySlice.test.ts` covering: `addSession` stores query only and prepends newest-first; cap-at-5 discards the oldest and keeps the newest; `addSession` sets `openId` to the new entry; `toggleSession` opens a collapsed session, collapses the open one, and enforces single-open; id assignment happens in the reducer (dispatching the plain query yields a numeric id).
+- [x] 2.4 Verify: `yarn typecheck`, `yarn lint`, `yarn test:run` all pass (old `repos` slice still drives the UI at this point).
 
 ## 3. Rewire components to the new architecture and remove the old slice  <!-- judgement-heavy -->
 
