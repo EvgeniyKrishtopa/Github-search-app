@@ -15,15 +15,15 @@
 
 ## 3. Rewire components to the new architecture and remove the old slice  <!-- judgement-heavy -->
 
-- [ ] 3.1 `Form`: dispatch `addSession(query)` on non-empty submit, clear the input regardless, no fetch trigger and no local error mirror (remove the `errorResponse` `useState`/`useEffect`).
-- [ ] 3.2 `AccordionItem`: read nothing from a stored `data`; call `useSearchReposQuery({ id, q: query }, { skip: !isOpen })` (arg keyed per session id — design D1); render its own per-item loading (reuse `Loader`) and error; show the empty-results message when the live result set is empty; dispatch `toggleSession(id)` on the header toggle.
-- [ ] 3.3 `ListRequests`: select `entries` and `openId` from the `searchHistory` slice; pass `isOpen={openId === id}` to each `AccordionItem`; drop the global loading branch (loading is per item now).
-- [ ] 3.4 `store.ts` hydration: load `[{ id, query }]` from `localStorage`, ignoring any extra legacy fields (design D5); set `openId: null` so restored history starts collapsed (design D3/D7).
-- [ ] 3.5 `listenerMiddleware.ts`: persist on `addSession` only (not on toggle); write `entries` (queries only) to `localStorage`.
-- [ ] 3.6 Remove `store/reposSlice.ts`, the `fetchRepos` thunk, the `loading`/`error` fields, and `changeSessionOpenedStatus`; drop the `repos` reducer from the store; delete `store/reposSlice.test.ts`.
-- [ ] 3.7 Update/replace component tests: `Form` (dispatches `addSession`, clears input, no session on empty), `AccordionItem` (skips fetch when collapsed, fetches when open, renders per-item loading/error/empty, toggles, and re-expanding the same session within the cache window issues **no** second request — assert fetch call count), `ListRequests` (single-open via `openId`); add an integration test covering the search → live-result → collapse/expand flow with a mocked fetch.
-- [ ] 3.8 Add `src/store/store.test.ts` covering the `History persistence` hydration scenarios that `reposSlice.test.ts`'s deletion removes: history restored from `localStorage` (queries only, starting collapsed), legacy old-shape payload tolerated (extra fields ignored, queries still restored — D5), no stored history yields an empty history with no error, and restoration is idempotent under repeated initialization (StrictMode — R5).
-- [ ] 3.9 Verify: `yarn typecheck`, `yarn lint`, `yarn test:coverage` pass and coverage stays ≥90% statements/lines/functions.
+- [x] 3.1 `Form`: dispatch `addSession(query)` on non-empty submit, clear the input regardless, no fetch trigger and no local error mirror (remove the `errorResponse` `useState`/`useEffect`).
+- [x] 3.2 `AccordionItem`: read nothing from a stored `data`; call `useSearchReposQuery({ id, q: query }, { skip: !isOpen })` (arg keyed per session id — design D1); render its own per-item loading (reuse `Loader`) and error; show the empty-results message when the live result set is empty; dispatch `toggleSession(id)` on the header toggle.
+- [x] 3.3 `ListRequests`: select `entries` and `openId` from the `searchHistory` slice; pass `isOpen={openId === id}` to each `AccordionItem`; drop the global loading branch (loading is per item now).
+- [x] 3.4 `store.ts` hydration: load `[{ id, query }]` from `localStorage`, ignoring any extra legacy fields (design D5); set `openId: null` so restored history starts collapsed (design D3/D7).
+- [x] 3.5 `listenerMiddleware.ts`: persist on `addSession` only (not on toggle); write `entries` (queries only) to `localStorage`.
+- [x] 3.6 Remove `store/reposSlice.ts`, the `fetchRepos` thunk, the `loading`/`error` fields, and `changeSessionOpenedStatus`; drop the `repos` reducer from the store; delete `store/reposSlice.test.ts`.
+- [x] 3.7 Update/replace component tests: `Form` (dispatches `addSession`, clears input, no session on empty), `AccordionItem` (skips fetch when collapsed, fetches when open, renders per-item loading/error/empty, toggles, and re-expanding the same session within the cache window issues **no** second request — assert fetch call count), `ListRequests` (single-open via `openId`); add an integration test covering the search → live-result → collapse/expand flow with a mocked fetch.
+- [x] 3.8 Add `src/store/store.test.ts` covering the `History persistence` hydration scenarios that `reposSlice.test.ts`'s deletion removes: history restored from `localStorage` (queries only, starting collapsed), legacy old-shape payload tolerated (extra fields ignored, queries still restored — D5), no stored history yields an empty history with no error, and restoration is idempotent under repeated initialization (StrictMode — R5).
+- [x] 3.9 Verify: `yarn typecheck`, `yarn lint`, `yarn test:coverage` pass and coverage stays ≥90% statements/lines/functions.
 
 ## 4. Move to the feature-oriented layout (mechanical, behavior-preserving)  <!-- isolated -->
 
