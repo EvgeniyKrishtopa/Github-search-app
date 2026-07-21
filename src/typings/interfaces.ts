@@ -4,17 +4,16 @@ export interface IGitHubRepo {
   html_url: string;
 }
 
+// A history entry holds only its identity + query; repository results are owned
+// by githubApi and re-derived live on expand (rework-state-architecture).
 export interface ISession {
-  data: Array<IGitHubRepo>;
   id: number;
-  opened: boolean;
-  request: string;
+  query: string;
 }
 
-export interface IState {
-  loading: boolean;
-  sessions: Array<ISession>;
-  error: null | string;
+export interface SearchHistoryState {
+  entries: Array<ISession>;
+  openId: number | null;
 }
 
 export interface IRepository {

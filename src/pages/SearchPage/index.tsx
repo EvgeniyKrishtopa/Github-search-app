@@ -1,6 +1,6 @@
 import React from 'react';
-import Form from 'components/Form';
-import ListRequests from 'components/ListRequests';
+import Form from 'features/searchHistory/Form';
+import ListRequests from 'features/searchHistory/ListRequests';
 import styles from './styles.module.scss';
 
 const SearchPage: React.FC = () => {
