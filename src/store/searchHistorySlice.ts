@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { IHistoryEntry, SearchHistoryState } from 'typings/interfaces';
+import { ISession, SearchHistoryState } from 'typings/interfaces';
 
 const HISTORY_CAP = 5;
 
@@ -16,7 +16,7 @@ const searchHistorySlice = createSlice({
       // Identity is assigned here, in the slice, so `Date.now()` never lives in
       // a component and the id-uniqueness rule is unit-testable (design D2).
       prepare: (query: string) => ({ payload: { id: Date.now(), query } }),
-      reducer: (state, action: PayloadAction<IHistoryEntry>) => {
+      reducer: (state, action: PayloadAction<ISession>) => {
         if (state.entries.length >= HISTORY_CAP) {
           state.entries.pop();
         }
