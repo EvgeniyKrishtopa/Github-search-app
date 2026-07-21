@@ -8,10 +8,10 @@
 
 ## 2. Add the searchHistory domain slice (additive)  <!-- isolated -->
 
-- [ ] 2.1 Reshape `typings/interfaces.ts`: `ISession = { id: number; query: string }` (no `data`, no `opened`); add `SearchHistoryState = { entries: ISession[]; openId: number | null }`; remove the old `IState`.
-- [ ] 2.2 Create `src/store/searchHistorySlice.ts` with `initialState = { entries: [], openId: null }` and reducers: `addSession` (with a `prepare` callback assigning `id: Date.now()` — design D2 — that prepends the entry, caps `entries` at 5 by discarding the oldest, and sets `openId` to the new id) and `toggleSession(id)` (the single-open branch `state.openId = state.openId === id ? null : id` — design D3).
-- [ ] 2.3 Add `src/store/searchHistorySlice.test.ts` covering: `addSession` stores query only and prepends newest-first; cap-at-5 discards the oldest and keeps the newest; `addSession` sets `openId` to the new entry; `toggleSession` opens a collapsed session, collapses the open one, and enforces single-open; id assignment happens in the reducer (dispatching the plain query yields a numeric id).
-- [ ] 2.4 Verify: `yarn typecheck`, `yarn lint`, `yarn test:run` all pass (old `repos` slice still drives the UI at this point).
+- [x] 2.1 Reshape `typings/interfaces.ts`: `ISession = { id: number; query: string }` (no `data`, no `opened`); add `SearchHistoryState = { entries: ISession[]; openId: number | null }`; remove the old `IState`.
+- [x] 2.2 Create `src/store/searchHistorySlice.ts` with `initialState = { entries: [], openId: null }` and reducers: `addSession` (with a `prepare` callback assigning `id: Date.now()` — design D2 — that prepends the entry, caps `entries` at 5 by discarding the oldest, and sets `openId` to the new id) and `toggleSession(id)` (the single-open branch `state.openId = state.openId === id ? null : id` — design D3).
+- [x] 2.3 Add `src/store/searchHistorySlice.test.ts` covering: `addSession` stores query only and prepends newest-first; cap-at-5 discards the oldest and keeps the newest; `addSession` sets `openId` to the new entry; `toggleSession` opens a collapsed session, collapses the open one, and enforces single-open; id assignment happens in the reducer (dispatching the plain query yields a numeric id).
+- [x] 2.4 Verify: `yarn typecheck`, `yarn lint`, `yarn test:run` all pass (old `repos` slice still drives the UI at this point).
 
 ## 3. Rewire components to the new architecture and remove the old slice  <!-- judgement-heavy -->
 
