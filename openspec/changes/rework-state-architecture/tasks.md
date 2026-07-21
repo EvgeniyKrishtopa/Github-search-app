@@ -27,10 +27,10 @@
 
 ## 4. Move to the feature-oriented layout (mechanical, behavior-preserving)  <!-- isolated -->
 
-- [ ] 4.1 Move `store/store.ts`, `store/hooks.ts`, `store/listenerMiddleware.ts`, and `store/githubApi.ts` into `src/app/`.
-- [ ] 4.2 Move `searchHistorySlice.ts` and the `Form`, `ListRequests`, `AccordionItem`, `Repository` component folders into `src/features/searchHistory/`; leave `Header` and `Loader` in `src/components/`.
-- [ ] 4.3 Update alias imports across `src/` to the new module names (no path-depth changes — aliases resolve by name); move each test file alongside its moved source.
-- [ ] 4.4 Verify: `yarn typecheck`, `yarn lint`, `yarn test:coverage` pass unchanged from group 3 (this group changes no behavior).
+- [x] 4.1 Move `store/store.ts`, `store/hooks.ts`, `store/listenerMiddleware.ts`, and `store/githubApi.ts` into `src/app/`.
+- [x] 4.2 Move `searchHistorySlice.ts` and the `Form`, `ListRequests`, `AccordionItem`, `Repository` component folders into `src/features/searchHistory/`; leave `Header` and `Loader` in `src/components/`.
+- [x] 4.3 Update alias imports across `src/` to the new module names (no path-depth changes — aliases resolve by name); move each test file alongside its moved source.
+- [x] 4.4 Verify: `yarn typecheck`, `yarn lint`, `yarn test:coverage` pass unchanged from group 3 (this group changes no behavior).
 
 ## 5. Update project documentation to match the new architecture  <!-- isolated -->
 

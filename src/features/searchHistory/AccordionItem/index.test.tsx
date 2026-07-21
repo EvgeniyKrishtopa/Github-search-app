@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { setupStore, AppStore } from 'store/store';
+import { setupStore, AppStore } from 'app/store';
 import AccordionItem from './index';
 
 const jsonResponse = (items: Array<Record<string, unknown>>) =>

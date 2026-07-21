@@ -1,8 +1,8 @@
 import React from 'react';
-import { toggleSession } from 'store/searchHistorySlice';
-import { useAppDispatch } from 'store/hooks';
-import { useSearchReposQuery } from 'store/githubApi';
-import Repository from 'components/Repository';
+import { toggleSession } from 'features/searchHistory/searchHistorySlice';
+import { useAppDispatch } from 'app/hooks';
+import { useSearchReposQuery } from 'app/githubApi';
+import Repository from 'features/searchHistory/Repository';
 import Loader from 'components/Loader';
 import styles from './styles.module.scss';
 

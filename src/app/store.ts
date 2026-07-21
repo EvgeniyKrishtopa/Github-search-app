@@ -2,7 +2,7 @@ import { configureStore } from '@reduxjs/toolkit';
 import { ISession } from 'typings/interfaces';
 import { listenerMiddleware } from './listenerMiddleware';
 import { githubApi } from './githubApi';
-import searchHistoryReducer from './searchHistorySlice';
+import searchHistoryReducer from 'features/searchHistory/searchHistorySlice';
 
 // Restore the query-key history from localStorage. Only { id, query } is read;
 // any extra fields are ignored, and a legacy pre-rework entry that stored the
