@@ -1,6 +1,7 @@
 import { configureStore } from '@reduxjs/toolkit';
 import { ISession } from 'typings/interfaces';
 import { listenerMiddleware } from './listenerMiddleware';
+import { githubApi } from './githubApi';
 import reposReducer from './reposSlice';
 
 const loadSessions = (): Array<ISession> => {
@@ -18,10 +19,15 @@ export const setupStore = (preloadedState?: {
   repos: ReturnType<typeof reposReducer>;
 }) =>
   configureStore({
-    reducer: { repos: reposReducer },
+    reducer: {
+      repos: reposReducer,
+      [githubApi.reducerPath]: githubApi.reducer,
+    },
     preloadedState,
     middleware: getDefaultMiddleware =>
-      getDefaultMiddleware().prepend(listenerMiddleware.middleware),
+      getDefaultMiddleware()
+        .prepend(listenerMiddleware.middleware)
+        .concat(githubApi.middleware),
   });
 
 const store = setupStore({
