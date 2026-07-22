@@ -1,9 +1,9 @@
 ## 1. Tooling foundation  <!-- isolated -->
 
-- [ ] 1.1 Add `styled-components` (runtime) and its types + `babel-plugin-styled-components` (dev) via yarn; do not remove `sass`/`normalize.css` yet (components still use them until migrated)
-- [ ] 1.2 Wire `babel-plugin-styled-components` into `@vitejs/plugin-react`'s Babel options in `vite.config.ts` (stable class names + `displayName`)
-- [ ] 1.3 Add the Inter + JetBrains Mono Google Fonts `<link>` (preconnect + stylesheet, `display=swap`) to `index.html`'s `<head>`
-- [ ] 1.4 Verify the app still builds and the existing suite is green: `yarn typecheck && yarn lint && yarn test:run`
+- [x] 1.1 Add `styled-components` (runtime) and its types + `babel-plugin-styled-components` (dev) via yarn; do not remove `sass`/`normalize.css` yet (components still use them until migrated)
+- [x] 1.2 Wire `babel-plugin-styled-components` into `@vitejs/plugin-react`'s Babel options in `vite.config.ts` (stable class names + `displayName`)
+- [x] 1.3 Add the Inter + JetBrains Mono Google Fonts `<link>` (preconnect + stylesheet, `display=swap`) to `index.html`'s `<head>`
+- [x] 1.4 Verify the app still builds and the existing suite is green: `yarn typecheck && yarn lint && yarn test:run`
 
 ## 2. Theme foundation (palette, slice, provider, persistence)  <!-- judgement-heavy -->
 
