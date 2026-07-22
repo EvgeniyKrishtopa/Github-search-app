@@ -68,6 +68,13 @@ The system SHALL display an error message within a session whose search fails, r
 - **AND** the user creates or expands a different session
 - **THEN** the other session does not inherit the first session's error
 
+#### Scenario: Error clears on a subsequent search
+
+- **WHEN** a session's search has failed and shown its error while expanded
+- **AND** the user submits a new search
+- **THEN** the new session is expanded and the failed session collapses
+- **AND** the failed session's error is no longer displayed
+
 ## ADDED Requirements
 
 ### Requirement: Fetching follows session visibility
