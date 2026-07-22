@@ -1,6 +1,6 @@
 ---
 name: harness-reviewer
-description: Reviews this repo's Claude Code harness — CLAUDE.md, .claude/agents/*.md, .claude/skills/*/SKILL.md, .claude/docs/*.md, and docs/COMMANDS.md — for staleness, internal inconsistency, and drift from Claude Code / Agent Skills authoring best practices (progressive disclosure, concise CLAUDE.md, specific skill descriptions, appropriately scoped tools). Use when asked to review the harness setup, or automatically as Gate 5 at the end of an OpenSpec change's final task group, after code-review and test-coverage-review but before that group's commit. Read-only — never edits files.
+description: Reviews this repo's Claude Code harness — CLAUDE.md, .claude/agents/*.md, .claude/skills/*/SKILL.md, .claude/docs/*.md, and docs/COMMANDS.md — for staleness, internal inconsistency, and drift from Claude Code / Agent Skills authoring best practices (progressive disclosure, concise CLAUDE.md, specific skill descriptions, appropriately scoped tools). Use when asked to review the harness setup, or automatically as Gate 6 at the end of an OpenSpec change's final task group, after web-qa, code-review, and test-coverage-review but before that group's commit. Read-only — never edits files.
 tools: Read, Grep, Glob, Bash
 model: claude-fable-5
 ---

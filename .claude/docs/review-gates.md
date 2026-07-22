@@ -2,13 +2,16 @@
 
 This project wires AI review subagents into specific points of the OpenSpec
 workflow, so architecture and spec problems surface before implementation,
-and code/test problems surface before a task group is committed.
+and QA/code/test problems surface before a task group is committed.
 
 Per CLAUDE.md's Review Principles, "AI review is a sensor, not a final
-verdict — the human owns the merge." Gates 1–4 surface their findings and
-pause on a `CONFIRMED` finding for a human decision; none of them silently
-block progress or auto-fix code, and `PLAUSIBLE`-only findings (or a clean
-review) do not pause anything. Gate 5 is different by design — see below.
+verdict — the human owns the merge." Gates 1, 2, 4, and 5 surface their
+findings and pause on a `CONFIRMED` finding for a human decision; none of
+them silently block progress or auto-fix code, and `PLAUSIBLE`-only findings
+(or a clean review) do not pause anything. Gates 3 and 6 are different by
+design — Gate 3 (web-qa) is a must-pass gate with a human-approved fix loop,
+and Gate 6 (harness-review) suggests an actionable fix on every finding
+regardless of verdict — see each below.
 
 The wrapper skills below (`opsx-propose-review`, `opsx-update-review`,
 `opsx-apply-git`) are the ones that actually run these gates — this file is
@@ -55,45 +58,90 @@ implementation.
 **On clean, or `PLAUSIBLE`-only:** declare the change ready for
 implementation as usual. (The classification is still recorded.)
 
-## Gate 3 — code-review after a task group's implementation
+## Gate 3 — web-qa after the last group's implementation
+
+**Trigger:** the *last* OpenSpec task group with pending tasks (same
+last-group determination as Gate 6), once its implementation is green (its
+own verification — typecheck/lint/tests — passes), and **before** Gate 4
+(code-review) — this is the final real-browser check before the change
+lands. Groups that aren't the last one skip this gate entirely; that's why
+the browser pass runs once per change, not per group (a full browser pass is
+too slow and flaky for a per-commit loop).
+
+**Applicability:** only when the change touched user-facing UI/flows. If the
+change's diff includes no user-facing surface (e.g. a CI/CD-only or
+docs-only change), there is nothing to QA — note that the gate is *not
+applicable* and proceed straight to Gate 4, the same way Gate 5 is skipped
+when a group changed no tests.
+
+**Action:** run the `web-qa` skill against the change's cumulative
+user-facing flows — inferred from the *whole change's* diff against the
+parent branch (not just the last group's), mapped to flows per CLAUDE.md's
+component layers — so the final QA covers everything the change touched, not
+only its last group. The skill ensures a dev server is running, delegates to
+the `web-qa-manual-tester` subagent, and relays a per-flow PASS/FAIL report.
+
+**Unlike the CONFIRMED/PLAUSIBLE gates, this is a must-pass gate with a fix
+loop.** On an all-PASS report, proceed to Gate 4. On any FAIL:
+
+1. **First rule out an environment condition.** A GitHub API rate-limit
+   `403` (the public search API is unauthenticated and rate-limited) is not
+   an app bug — note it and re-run rather than treating it as a defect,
+   though the app must still handle it gracefully (no crash/blank screen).
+2. **For a genuine failure, suggest a concrete fix and ask the user to
+   approve it** before changing anything. Apply the approved fix — it becomes
+   part of the group's own implementation diff, so Gate 4 (code-review) and
+   Gate 5 (test-coverage) then review it — and **re-run web-qa** on the
+   affected flow(s). Repeat: suggest → approve → implement → re-run, until
+   the report is all-PASS.
+3. **Do not proceed to Gate 4 past a FAIL on the default path.** The one
+   exception is an explicit human decision to proceed anyway (the human owns
+   the merge); record that choice in the group's commit body.
+
+Because the fix loop is interactive, this gate is a pause point in an
+autonomous `isolated` batch, just like a `CONFIRMED` finding — but since it
+only fires on the last group, the batch is ending anyway.
+
+## Gate 4 — code-review after a task group's implementation
 
 **Trigger:** every sub-task in an OpenSpec task group is implemented and the
 group's own verification (typecheck/lint/tests, per the group's tasks)
-passes — after `opsx-apply-git`'s step 4.1 (diff-scope check), before its
-commit step.
+passes — after `opsx-apply-git`'s step 4.1 (diff-scope check) and, on the
+last group, after Gate 3 (web-qa) has passed or been ruled not applicable;
+before the group's commit step.
 
 **Action:** run the `code-review` skill against the group's uncommitted
-diff.
+diff (including any web-qa fixes Gate 3 introduced on the last group).
 
 **On a `CONFIRMED` finding:** show it to the user and ask whether to fix now
 or commit anyway. Do not auto-commit past an unresolved `CONFIRMED` finding.
 
-**On clean, or `PLAUSIBLE`-only:** proceed to Gate 4.
+**On clean, or `PLAUSIBLE`-only:** proceed to Gate 5.
 
-## Gate 4 — test-coverage-review after Gate 3 passes
+## Gate 5 — test-coverage-review after Gate 4 passes
 
-**Trigger:** Gate 3 is clean (or the user explicitly chose to proceed
+**Trigger:** Gate 4 is clean (or the user explicitly chose to proceed
 anyway) for a group whose tasks included test creation or updates.
 
-**Action:** run the `test-coverage` skill against the same diff Gate 3
+**Action:** run the `test-coverage` skill against the same diff Gate 4
 reviewed.
 
 **On a `CONFIRMED` finding:** show it to the user and ask whether to add or
 fix tests now or commit anyway.
 
-**On clean, or `PLAUSIBLE`-only:** proceed to Gate 5 if this is the last
+**On clean, or `PLAUSIBLE`-only:** proceed to Gate 6 if this is the last
 group with pending tasks in the whole change; otherwise commit the group.
 A mid-batch `isolated` group then loops back to the next group (`opsx-apply-git`
 §3 Case A), while a single `judgement-heavy` group or the last group of a
 batch continues to push + open the run's PR — those steps (`opsx-apply-git`
-§4.7–4.10) run once per run, not once per group.
+§4.8–4.11) run once per run, not once per group.
 
-## Gate 5 — harness-review at the end of a change
+## Gate 6 — harness-review at the end of a change
 
 **Trigger:** the *last* OpenSpec task group with pending tasks — determined
-right after Gate 4 (or Gate 3, if Gate 4 didn't apply) passes for a group,
+right after Gate 5 (or Gate 4, if Gate 5 didn't apply) passes for a group,
 by checking whether any `- [ ]` remain anywhere else in `tasks.md` — but
-before that group's own commit (`opsx-apply-git`'s step 4.6). Groups that
+before that group's own commit (`opsx-apply-git`'s step 4.7). Groups that
 aren't the last one skip this gate entirely.
 
 **Action:** run the `harness-review` skill, scoped to the whole harness
