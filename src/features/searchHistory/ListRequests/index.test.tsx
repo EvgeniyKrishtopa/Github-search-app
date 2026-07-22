@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, waitFor } from '@testing-library/react';
-import { Provider } from 'react-redux';
+import { waitFor } from '@testing-library/react';
 import { setupStore } from 'app/store';
+import { renderWithProviders } from 'testUtils';
 import ListRequests from './index';
 
 describe('ListRequests', () => {
@@ -10,11 +10,7 @@ describe('ListRequests', () => {
   });
 
   it('renders nothing when there is no history', () => {
-    const { container } = render(
-      <Provider store={setupStore()}>
-        <ListRequests />
-      </Provider>,
-    );
+    const { container } = renderWithProviders(<ListRequests />);
 
     expect(container).toBeEmptyDOMElement();
   });
@@ -33,11 +29,9 @@ describe('ListRequests', () => {
       },
     });
 
-    const { getByText, container } = render(
-      <Provider store={store}>
-        <ListRequests />
-      </Provider>,
-    );
+    const { getByText, container } = renderWithProviders(<ListRequests />, {
+      store,
+    });
 
     expect(getByText('react')).toBeInTheDocument();
     expect(getByText('vue')).toBeInTheDocument();

@@ -23,10 +23,10 @@
 
 ## 3. Migrate leaf components (Repository, Loader)  <!-- isolated -->
 
-- [ ] 3.1 Convert `features/searchHistory/Repository` to styled-components: green-dot bullet + repo name, **keeping** the clickable `<a href={url}>` (accessibility/function preserved); delete its `styles.module.scss`
-- [ ] 3.2 Convert `components/Loader` to styled-components matching the design language; delete its `styles.module.scss`
-- [ ] 3.3 Update any tests in these components asserting on `styles.*` class names to query by role/text; add/adjust assertions as needed
-- [ ] 3.4 Verify: `yarn typecheck && yarn lint && yarn test:run` green
+- [x] 3.1 Convert `features/searchHistory/Repository` to styled-components: green-dot bullet + repo name, **keeping** the clickable `<a href={url}>` (accessibility/function preserved); delete its `styles.module.scss`
+- [x] 3.2 Convert `components/Loader` to styled-components matching the design language; delete its `styles.module.scss`
+- [x] 3.3 Update any tests in these components asserting on `styles.*` class names to query by role/text; add/adjust assertions as needed
+- [x] 3.4 Verify: `yarn typecheck && yarn lint && yarn test:run` green
 
 ## 4. Migrate history components (AccordionItem, Form, ListRequests)  <!-- isolated -->
 

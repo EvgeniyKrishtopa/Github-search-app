@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, fireEvent, waitFor } from '@testing-library/react';
-import { Provider } from 'react-redux';
+import { fireEvent, waitFor } from '@testing-library/react';
 import { setupStore } from 'app/store';
+import { renderWithProviders } from 'testUtils';
 import SearchPage from './index';
 
 const jsonResponse = (items: Array<Record<string, unknown>>) =>
@@ -23,10 +23,9 @@ describe('SearchPage integration', () => {
     vi.stubGlobal('fetch', fetchMock);
     const store = setupStore();
 
-    const { getByPlaceholderText, getByText, container } = render(
-      <Provider store={store}>
-        <SearchPage />
-      </Provider>,
+    const { getByPlaceholderText, getByText, container } = renderWithProviders(
+      <SearchPage />,
+      { store },
     );
 
     // Submit a search — a session is created, opened, and fetches live.

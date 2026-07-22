@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, fireEvent, waitFor } from '@testing-library/react';
-import { Provider } from 'react-redux';
+import { fireEvent, waitFor } from '@testing-library/react';
 import { setupStore, AppStore } from 'app/store';
+import { renderWithProviders } from 'testUtils';
 import AccordionItem from './index';
 
 const jsonResponse = (items: Array<Record<string, unknown>>) =>
@@ -13,12 +13,7 @@ const jsonResponse = (items: Array<Record<string, unknown>>) =>
 const renderItem = (
   props: { id: number; query: string; isOpen: boolean },
   store: AppStore = setupStore(),
-) =>
-  render(
-    <Provider store={store}>
-      <AccordionItem {...props} />
-    </Provider>,
-  );
+) => renderWithProviders(<AccordionItem {...props} />, { store });
 
 describe('AccordionItem', () => {
   afterEach(() => {
@@ -40,9 +35,9 @@ describe('AccordionItem', () => {
       vi.fn(() => new Promise(() => undefined)),
     );
 
-    const { container } = renderItem({ id: 1, query: 'react', isOpen: true });
+    const { getByRole } = renderItem({ id: 1, query: 'react', isOpen: true });
 
-    expect(container.querySelector('.page-center')).not.toBeNull();
+    expect(getByRole('status', { name: /loading/i })).toBeInTheDocument();
   });
 
   it("isolates an error to the failing session, not a sibling that succeeds", async () => {
@@ -61,11 +56,11 @@ describe('AccordionItem', () => {
       }),
     );
 
-    const { getByText, queryAllByText } = render(
-      <Provider store={setupStore()}>
+    const { getByText, queryAllByText } = renderWithProviders(
+      <>
         <AccordionItem id={1} query="facebook" isOpen />
         <AccordionItem id={2} query="boom" isOpen />
-      </Provider>,
+      </>,
     );
 
     await waitFor(() => {
@@ -164,17 +159,15 @@ describe('AccordionItem', () => {
     vi.stubGlobal('fetch', fetchMock);
     const store = setupStore();
 
-    const open = (isOpen: boolean) => (
-      <Provider store={store}>
-        <AccordionItem id={1} query="react" isOpen={isOpen} />
-      </Provider>
+    const item = (isOpen: boolean) => (
+      <AccordionItem id={1} query="react" isOpen={isOpen} />
     );
-    const { rerender } = render(open(true));
+    const { rerender } = renderWithProviders(item(true), { store });
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
 
     // Collapse (unsubscribe) then re-expand (re-subscribe) — served from cache.
-    rerender(open(false));
-    rerender(open(true));
+    rerender(item(false));
+    rerender(item(true));
     await new Promise(resolve => setTimeout(resolve, 0));
 
     expect(fetchMock).toHaveBeenCalledTimes(1);
