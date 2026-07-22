@@ -44,10 +44,11 @@ Run in order as part of the OpenSpec workflow. See [`.claude/docs/review-gates.m
 | Skill | What it does | When to use |
 |---|---|---|
 | `/architecture-review` | **Gate 1.** Reviews a diff — or an OpenSpec `design.md` — for architecture risks: boundary violations, mixed concerns, god components/services, circular deps, duplicated domain logic, unnecessary global state. | Right after a `design.md` is drafted; before committing any change touching **2+ layers**; for any high-risk change. |
-| `/spec-review` | Reviews an OpenSpec change (proposal, design, specs, tasks) for internal consistency, testable requirements, and traceability, **and classifies each task group `isolated` vs `judgement-heavy`**, writing the mark into `tasks.md` for the apply-loop. | After the full artifact set is drafted; before implementing or archiving a change. |
-| `/code-review` | **Gate 3.** Correctness bugs + reuse/simplification/efficiency cleanups against the project's standards. `--fix` applies findings. | Before a task group's commit; before merging any change. |
-| `/test-coverage` | Reviews a diff for test-coverage gaps and weak assertions against the ≥90% thresholds and any acceptance criteria in `openspec/`. | After `/code-review`, before merging a behavior change. |
-| `/harness-review` | **Gate 5.** Reviews `CLAUDE.md`, `.claude/agents/`, `.claude/skills/`, `.claude/docs/` for stale claims and drift from authoring best practices. | Before a final task group's commit; when the harness setup changes. |
+| `/spec-review` | **Gate 2.** Reviews an OpenSpec change (proposal, design, specs, tasks) for internal consistency, testable requirements, and traceability, **and classifies each task group `isolated` vs `judgement-heavy`**, writing the mark into `tasks.md` for the apply-loop. | After the full artifact set is drafted; before implementing or archiving a change. |
+| `/web-qa` | **Gate 3.** Manual QA pass on the change's UI flows in a real browser (Playwright). On the last group only, before code-review; a **must-pass gate with a fix loop** (not a CONFIRMED/PLAUSIBLE pause). Not applicable to changes with no user-facing surface. | The last group's final browser check; before a PR touching UI flows; after changes to critical flows. **Not** every commit — too slow/flaky. |
+| `/code-review` | **Gate 4.** Correctness bugs + reuse/simplification/efficiency cleanups against the project's standards. `--fix` applies findings. | Before a task group's commit; before merging any change. |
+| `/test-coverage` | **Gate 5.** Reviews a diff for test-coverage gaps and weak assertions against the ≥90% thresholds and any acceptance criteria in `openspec/`. | After `/code-review`, before merging a behavior change. |
+| `/harness-review` | **Gate 6.** Reviews `CLAUDE.md`, `.claude/agents/`, `.claude/skills/`, `.claude/docs/` for stale claims and drift from authoring best practices. | Before a final task group's commit; when the harness setup changes. |
 
 ### OpenSpec workflow wrappers
 
@@ -67,7 +68,6 @@ the branch-per-group git workflow. Used alone, `/opsx:*` leaves work uncommitted
 | `/verify` | Exercises a change end-to-end — drives the affected flow, not just tests/typecheck. | Before committing nontrivial product-source changes. | Diffs touching only tests/docs (no runtime surface). |
 | `/simplify` | Quality-only cleanup pass: reuse, simplification, efficiency, altitude. | Tidying changed code after it works. | Bug hunting — that's `/code-review`. |
 | `/run` | Launches and drives the app to confirm a change works in the real app. | "Run the app" / confirm a change works for real / screenshot it. | Pure logic changes covered by tests. |
-| `/web-qa` | Manual QA pass on UI flows in a real browser (Playwright). | Before opening/updating a PR that touches UI flows; after changes to critical flows. | Every commit — too slow/flaky for that loop. |
 | `/loop` | Runs a prompt or slash command on a recurring interval (or self-paced). | Polling status or repeating a task on an interval. | One-off tasks. |
 | `/schedule` | Creates/manages scheduled cloud agents (cron routines), incl. one-time runs. | Recurring or future-scheduled automated runs. | Immediate work. |
 | `/update-config` | Configures the harness via `settings.json` — permissions, env vars, hooks (automated "whenever X" behaviors). | Allowing commands, setting env vars, wiring hooks. | Simple prefs like theme/model — use `/config`. |
