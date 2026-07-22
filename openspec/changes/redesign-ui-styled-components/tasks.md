@@ -7,19 +7,19 @@
 
 ## 2. Theme foundation (palette, slice, provider, persistence)  <!-- judgement-heavy -->
 
-- [ ] 2.1 Create `app/theme/palettes.ts` exporting typed `dark` and `light` `DefaultTheme` objects sharing one structure (colors: background/gradient, accent, glass bg/border, text, statusDot; radii; fonts sans/mono); dark values ported from the design, light derived from the same hues
-- [ ] 2.2 Verify WCAG AA contrast (≥4.5:1 body text, ≥3:1 large text/accent-on-background) for both palettes' text and accent colors; adjust the light-palette tokens until they pass and record the checked pairs/ratios in a comment in `palettes.ts`
-- [ ] 2.3 Create `app/theme/styled.d.ts` augmenting `styled-components`' `DefaultTheme` with the palette shape (no `any`)
-- [ ] 2.4 Create `app/theme/GlobalStyle.ts` (`createGlobalStyle`) providing the reset + body background gradient + base font + link colors from `theme` tokens (replacing what `normalize.css`/`common.scss` did)
-- [ ] 2.5 Create `features/theming/themeSlice.ts`: `ThemeState = { mode: 'dark' | 'light' }`, single `toggleTheme` reducer, and a `selectThemeMode` selector
-- [ ] 2.6 Add a `loadThemeMode()` helper (beside `loadHistory` in `app/store.ts`) resolving: persisted `theme-mode` in `localStorage` → OS preference via `matchMedia` **only when `typeof window !== 'undefined' && typeof window.matchMedia === 'function'`** → `'dark'`; register the `theme` slice and pass the resolved mode as `preloadedState`
-- [ ] 2.7 Add a `createListenerMiddleware` rule in `app/listenerMiddleware.ts` that persists `mode` to the `theme-mode` key on `toggleTheme` (leave the search-history rule untouched)
-- [ ] 2.8 Add a `window.matchMedia` mock to `src/setupTests.ts` so default-resolution branches are exercisable
-- [ ] 2.9 Create the connected `features/theming/ThemeToggle` component: reads `mode` via `useAppSelector`, dispatches `toggleTheme` via `useAppDispatch`, renders an accessible button (`aria-label`, `aria-pressed`) with a sun/moon affordance
-- [ ] 2.10 Add a `ThemedApp` wrapper **inside `App.tsx`'s `<Provider>`** that selects `mode` and wraps the `Header`/`SearchPage` tree in `<ThemeProvider theme={palettes[mode]}>` + `<GlobalStyle/>`; leave `src/index.tsx` unchanged
-- [ ] 2.11 Add tests: `themeSlice` (initial state, `toggleTheme` both directions), `loadThemeMode` (persisted wins, OS-dark, OS-light, no-`matchMedia` fallback), the persistence listener (writes `theme-mode`, leaves history untouched), and `ThemeToggle` (renders accessible control, dispatches on click, reflects state)
-- [ ] 2.12 Add a theme-application test: render a token-dependent styled component through `ThemedApp`/`ThemeProvider` with `mode: 'dark'` and with `mode: 'light'`, asserting the resolved palette differs (e.g. a computed color/`data-` token), so the "Theme selection" spec scenarios are exercised — not just the slice
-- [ ] 2.13 Verify: `yarn typecheck && yarn lint && yarn test:coverage` green (90% floor holds)
+- [x] 2.1 Create `app/theme/palettes.ts` exporting typed `dark` and `light` `DefaultTheme` objects sharing one structure (colors: background/gradient, accent, glass bg/border, text, statusDot; radii; fonts sans/mono); dark values ported from the design, light derived from the same hues
+- [x] 2.2 Verify WCAG AA contrast (≥4.5:1 body text, ≥3:1 large text/accent-on-background) for both palettes' text and accent colors; adjust the light-palette tokens until they pass and record the checked pairs/ratios in a comment in `palettes.ts`
+- [x] 2.3 Create `app/theme/styled.d.ts` augmenting `styled-components`' `DefaultTheme` with the palette shape (no `any`)
+- [x] 2.4 Create `app/theme/GlobalStyle.ts` (`createGlobalStyle`) providing the reset + body background gradient + base font + link colors from `theme` tokens (replacing what `normalize.css`/`common.scss` did)
+- [x] 2.5 Create `features/theming/themeSlice.ts`: `ThemeState = { mode: 'dark' | 'light' }`, single `toggleTheme` reducer, and a `selectThemeMode` selector
+- [x] 2.6 Add a `loadThemeMode()` helper (beside `loadHistory` in `app/store.ts`) resolving: persisted `theme-mode` in `localStorage` → OS preference via `matchMedia` **only when `typeof window !== 'undefined' && typeof window.matchMedia === 'function'`** → `'dark'`; register the `theme` slice and pass the resolved mode as `preloadedState`
+- [x] 2.7 Add a `createListenerMiddleware` rule in `app/listenerMiddleware.ts` that persists `mode` to the `theme-mode` key on `toggleTheme` (leave the search-history rule untouched)
+- [x] 2.8 Add a `window.matchMedia` mock to `src/setupTests.ts` so default-resolution branches are exercisable
+- [x] 2.9 Create the connected `features/theming/ThemeToggle` component: reads `mode` via `useAppSelector`, dispatches `toggleTheme` via `useAppDispatch`, renders an accessible button (`aria-label`, `aria-pressed`) with a sun/moon affordance
+- [x] 2.10 Add a `ThemedApp` wrapper **inside `App.tsx`'s `<Provider>`** that selects `mode` and wraps the `Header`/`SearchPage` tree in `<ThemeProvider theme={palettes[mode]}>` + `<GlobalStyle/>`; leave `src/index.tsx` unchanged
+- [x] 2.11 Add tests: `themeSlice` (initial state, `toggleTheme` both directions), `loadThemeMode` (persisted wins, OS-dark, OS-light, no-`matchMedia` fallback), the persistence listener (writes `theme-mode`, leaves history untouched), and `ThemeToggle` (renders accessible control, dispatches on click, reflects state)
+- [x] 2.12 Add a theme-application test: render a token-dependent styled component through `ThemedApp`/`ThemeProvider` with `mode: 'dark'` and with `mode: 'light'`, asserting the resolved palette differs (e.g. a computed color/`data-` token), so the "Theme selection" spec scenarios are exercised — not just the slice
+- [x] 2.13 Verify: `yarn typecheck && yarn lint && yarn test:coverage` green (90% floor holds)
 
 ## 3. Migrate leaf components (Repository, Loader)  <!-- isolated -->
 

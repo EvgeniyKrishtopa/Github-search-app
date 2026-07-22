@@ -1,6 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { setupStore } from './store';
 import { addSession, toggleSession } from 'features/searchHistory/searchHistorySlice';
+import { toggleTheme } from 'features/theming/themeSlice';
 
 beforeEach(() => {
   localStorage.clear();
@@ -27,5 +28,26 @@ describe('history persistence (listenerMiddleware)', () => {
     store.dispatch(toggleSession(1));
 
     expect(localStorage.getItem('sessions')).toBeNull();
+  });
+});
+
+describe('theme persistence (listenerMiddleware)', () => {
+  it('writes the mode to its own theme-mode key on toggle', () => {
+    const store = setupStore({ theme: { mode: 'dark' } });
+
+    store.dispatch(toggleTheme());
+
+    expect(localStorage.getItem('theme-mode')).toBe('light');
+  });
+
+  it('leaves persisted search history untouched when the theme toggles', () => {
+    const store = setupStore({ theme: { mode: 'dark' } });
+    store.dispatch(addSession('react'));
+    const historyBefore = localStorage.getItem('sessions');
+
+    store.dispatch(toggleTheme());
+
+    expect(localStorage.getItem('sessions')).toBe(historyBefore);
+    expect(localStorage.getItem('theme-mode')).toBe('light');
   });
 });
