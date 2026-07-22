@@ -2,31 +2,6 @@
 
 ## MODIFIED Requirements
 
-### Requirement: Session creation
-
-The system SHALL record each non-empty submitted query as a session containing only the query text, SHALL order sessions newest-first, and SHALL create the session on submission regardless of whether the resulting search later succeeds or fails. An empty query SHALL NOT create a session.
-
-#### Scenario: A submitted query creates a session
-
-- **WHEN** the user submits a search for `react`
-- **THEN** a session is recorded with the request text `react`
-- **AND** the session stores no repository results
-
-#### Scenario: Newest session appears first
-
-- **WHEN** the user searches for `vue` after having searched for `react`
-- **THEN** the `vue` session is ordered before the `react` session
-
-#### Scenario: A failed search still creates a session
-
-- **WHEN** the user submits a query whose search later fails
-- **THEN** the session for that query is still recorded
-
-#### Scenario: An empty query creates no session
-
-- **WHEN** the user submits the form with an empty input
-- **THEN** no session is recorded
-
 ### Requirement: History cap
 
 The system SHALL retain at most 5 sessions, discarding the oldest when a newly submitted query would exceed that limit.
@@ -69,7 +44,7 @@ The system SHALL keep at most one session expanded at a time. A newly created se
 
 The system SHALL inform the user when the expanded session's live search returns no repositories.
 
-#### Scenario: Session's live search returns no repositories
+#### Scenario: Session has no repositories
 
 - **WHEN** the user expands a session whose live search returns no repositories
 - **THEN** a message indicating there are no repositories is displayed
@@ -108,7 +83,40 @@ The system SHALL persist the session queries (not their results) to `localStorag
 - **THEN** the restored history is the same as after a single initialization
 - **AND** sessions are not duplicated
 
+## REMOVED Requirements
+
+### Requirement: Session creation
+
+**Reason:** Session creation is no longer gated on a search succeeding. In the query-key log model a session is created on submission and stores only the query (not results), which reverses the old "a failed search creates no session" guarantee. Replaced by the new **Session logging** requirement below.
+
+**Migration:** No data migration needed — the new `addSession` reducer records `{ id, query }` on submit; failed searches surface a per-session error on expand (see `repository-search` → Error reporting) rather than being suppressed at creation time.
+
 ## ADDED Requirements
+
+### Requirement: Session logging
+
+The system SHALL record each non-empty submitted query as a session containing only the query text, SHALL order sessions newest-first, and SHALL create the session on submission regardless of whether the resulting search later succeeds or fails. An empty query SHALL NOT create a session.
+
+#### Scenario: A submitted query creates a session
+
+- **WHEN** the user submits a search for `react`
+- **THEN** a session is recorded with the request text `react`
+- **AND** the session stores no repository results
+
+#### Scenario: Newest session appears first
+
+- **WHEN** the user searches for `vue` after having searched for `react`
+- **THEN** the `vue` session is ordered before the `react` session
+
+#### Scenario: A failed search still creates a session
+
+- **WHEN** the user submits a query whose search later fails
+- **THEN** the session for that query is still recorded
+
+#### Scenario: An empty query creates no session
+
+- **WHEN** the user submits the form with an empty input
+- **THEN** no session is recorded
 
 ### Requirement: Live session results
 
