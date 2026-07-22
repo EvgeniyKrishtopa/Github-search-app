@@ -9,6 +9,9 @@
 # testing
 /coverage
 
+# Playwright MCP run artifacts
+/.playwright-mcp
+
 # production
 /build
 /dist
