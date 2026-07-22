@@ -1,72 +1,110 @@
-# Getting Started with Create React App
+# GitHub Search App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A single-page app to search the GitHub repositories API and keep a rolling history of your last 5 searches as expandable accordion "sessions". History persists to `localStorage` as **queries only** — expanding a session re-runs its search live, so results are saved searches, never frozen snapshots.
 
-# Link: https://evgeniykrishtopa.github.io/Github-search-app/
+**Live demo:** https://evgeniykrishtopa.github.io/Github-search-app/
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Search public GitHub repositories (top 8 results per query).
+- Rolling history of the last 5 searches, capped automatically (oldest discarded).
+- Single-open accordion — expanding one session collapses the others.
+- Per-session loading and error states — only the open session fetches.
+- History persists across reloads (queries only); restored sessions start collapsed, so nothing fetches on load until you expand a session.
 
-### `yarn start`
+## Tech Stack
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+- **React 19** + **TypeScript** (strict)
+- **Redux Toolkit 2** — [RTK Query](https://redux-toolkit.js.org/rtk-query/overview) for server state, a domain slice for history
+- **react-redux 9**
+- **Vite 8** — dev server and build
+- **Sass** (CSS Modules)
+- **Vitest** + **React Testing Library** — tests, with V8 coverage
+- **ESLint 9** (flat config) + **Prettier 3**
+- Deployed to **GitHub Pages** via `gh-pages`
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+## Getting Started
 
-### `yarn test`
+**Prerequisites:** Node `>=24 <25` (pinned via `engines.node`) and **Yarn** (Yarn 1 / Classic).
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+yarn install     # install dependencies
+yarn dev         # start the dev server
+```
 
-### `yarn build`
+Then open **http://localhost:5173/Github-search-app/** (the app is served under the `/Github-search-app/` base path — the trailing path matters).
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Scripts
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+| Command              | Description                                                                 |
+| -------------------- | --------------------------------------------------------------------------- |
+| `yarn dev`           | Run the dev server at `http://localhost:5173/Github-search-app/`            |
+| `yarn build`         | Production build to `dist/`                                                  |
+| `yarn preview`       | Serve the `dist/` build locally under the base path (catches base-path issues) |
+| `yarn test`          | Vitest + RTL in interactive watch mode                                       |
+| `yarn test:run`      | Single test run (CI mode)                                                    |
+| `yarn test:coverage` | Single run with coverage (enforces thresholds)                              |
+| `yarn typecheck`     | `tsc --noEmit`                                                               |
+| `yarn lint`          | ESLint (flat config)                                                         |
+| `yarn format`        | Prettier, writing in place                                                   |
+| `yarn deploy`        | Build then publish `dist/` to GitHub Pages                                   |
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Run a single test file: `yarn test src/features/searchHistory/Form/index.test.tsx`.
 
-### `yarn eject`
+## Architecture
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+State is split by concern across three layers:
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **Server state — RTK Query** (`src/app/githubApi.ts`): one `searchRepos({ id, q })` endpoint hits the GitHub search API and owns the request lifecycle, caching, and dedup. The cache keys per session `id`, not per query text.
+- **Domain state — `searchHistory` slice** (`src/features/searchHistory/searchHistorySlice.ts`): holds the list of sessions (`{ id, query }`) and which one is open. Adds sessions, caps history at 5, and enforces single-open toggling.
+- **Persistence — listener middleware** (`src/app/listenerMiddleware.ts`): writes queries to `localStorage` on new searches; hydration happens once at store creation via `preloadedState`.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+Component flow: `App` → `Header` + `SearchPage` → `Form` (input + dispatch) and `ListRequests` (history) → `AccordionItem` (per session, subscribes + toggles) → `Repository` (per repo).
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Imports are absolute from `src` (e.g. `import Form from 'features/searchHistory/Form'`). Each component is a folder with `index.tsx` + `styles.module.scss`.
 
-## Learn More
+> For the full architecture, conventions, and state-flow reference, see [`CLAUDE.md`](./CLAUDE.md).
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## Project Structure
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+```
+src/
+├── app/                    # store infrastructure
+│   ├── store.ts            # configureStore + localStorage hydration
+│   ├── hooks.ts            # typed useAppSelector / useAppDispatch
+│   ├── githubApi.ts        # RTK Query service (server state)
+│   └── listenerMiddleware.ts  # localStorage persistence
+├── features/searchHistory/ # domain slice + its UI
+│   ├── searchHistorySlice.ts
+│   ├── Form/               # search input + dispatch
+│   ├── ListRequests/       # history list
+│   ├── AccordionItem/      # per-session subscribe + toggle
+│   └── Repository/         # per-repo card
+├── components/             # shared dumb UI (Header, Loader)
+├── pages/SearchPage/       # route composition
+├── styles/                 # global styles + variables
+└── typings/interfaces.ts   # shared types (e.g. IGitHubRepo)
+```
 
-### Code Splitting
+## Testing
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Tests live next to the code they cover (`*.test.tsx` / `*.test.ts`) and run in `jsdom`. Coverage thresholds are enforced at **90%** on statements, lines, and functions.
 
-### Analyzing the Bundle Size
+```bash
+yarn test:coverage
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## CI/CD
 
-### Making a Progressive Web App
+GitHub Actions workflows live in `.github/workflows/`:
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- **`ci.yml`** — runs on every pull request and on push to `main`: typecheck, lint, test-coverage, CodeQL, and a report-only dependency-health check.
+- **`cd.yml`** — deploys to GitHub Pages after CI succeeds on a push to `main`.
 
-### Advanced Configuration
+## Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+The app deploys to GitHub Pages. The base path is set via Vite's `base` config in `vite.config.ts` (not a `homepage` field). To publish manually:
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+```bash
+yarn deploy
+```
