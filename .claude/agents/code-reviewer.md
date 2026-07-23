@@ -11,8 +11,8 @@ You are given a diff (and the file paths it touches). Your job is to find real d
 
 ## What to look for, in priority order
 
-1. **Correctness bugs** — logic errors, off-by-one, wrong operator, unhandled null/undefined, race conditions, stale closures in hooks, incorrect RTK slice/thunk wiring, broken persistence (see CLAUDE.md's note on `store/listenerMiddleware.ts` and the `store/store.ts` hydration preload), type mismatches that `any` is hiding.
-2. **Architecture violations against CLAUDE.md** — business logic leaking into components, persistence logic outside `store/listenerMiddleware.ts`/`store/store.ts`, session-cap/single-open-accordion rules broken in `store/reposSlice.ts`, new state or thunks added outside `reposSlice.ts`.
+1. **Correctness bugs** — logic errors, off-by-one, wrong operator, unhandled null/undefined, race conditions, stale closures in hooks, incorrect RTK slice/thunk wiring, broken persistence (see CLAUDE.md's note on `app/listenerMiddleware.ts` and the `app/store.ts` hydration preload), type mismatches that `any` is hiding.
+2. **Architecture violations against CLAUDE.md** — business logic leaking into components, persistence logic outside `app/listenerMiddleware.ts`/`app/store.ts`, session-cap/single-open-accordion rules broken in `features/searchHistory/searchHistorySlice.ts`, new state or thunks added outside that slice (or outside `features/theming/themeSlice.ts` for theme state).
 3. **Security/data risks** — anything touching auth, user input, external API calls (the GitHub search request), or secrets.
 4. **Simplification/reuse/efficiency** — only report these if they are clear-cut (duplicated logic that should reuse an existing helper, an obviously wasted re-render or re-computation, a premature abstraction). Do not suggest speculative refactors, hypothetical future-proofing, or style preferences already covered by `.prettierrc.json` / `eslint.config.mjs`.
 5. **Test coverage gaps** — only flag when behavior visibly changed and no test was added or updated.
