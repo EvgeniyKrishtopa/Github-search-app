@@ -41,20 +41,20 @@ describe('SearchPage integration', () => {
     });
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(store.getState().searchHistory.entries).toHaveLength(1);
-    expect(container.querySelector('.isOpen')).not.toBeNull();
+    expect(container.querySelector('[aria-expanded="true"]')).not.toBeNull();
 
-    // buttons: [0] the form's submit, [1] the accordion toggle.
+    // buttons: [0] the form's submit, [1] the accordion disclosure header.
     const toggle = () =>
       fireEvent.click(container.querySelectorAll('button')[1]);
 
     // Collapse the session, then re-expand it within the cache window.
     toggle();
     await waitFor(() =>
-      expect(container.querySelector('.isOpen')).toBeNull(),
+      expect(container.querySelector('[aria-expanded="true"]')).toBeNull(),
     );
     toggle();
     await waitFor(() =>
-      expect(container.querySelector('.isOpen')).not.toBeNull(),
+      expect(container.querySelector('[aria-expanded="true"]')).not.toBeNull(),
     );
 
     // Re-expanding served from cache — no second request was issued.

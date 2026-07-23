@@ -29,6 +29,26 @@ describe('AccordionItem', () => {
     expect(fetchMock).not.toHaveBeenCalled();
   });
 
+  it('marks the header collapsed and mounts no body when closed', () => {
+    vi.stubGlobal(
+      'fetch',
+      vi.fn(() => Promise.resolve(jsonResponse([]))),
+    );
+
+    const { getByRole, queryByText } = renderItem({
+      id: 1,
+      query: 'react',
+      isOpen: false,
+    });
+
+    expect(getByRole('button', { name: /react/i })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+    // Body is conditionally rendered — a collapsed item mounts no body content.
+    expect(queryByText('This request does not have any repos!')).toBeNull();
+  });
+
   it('shows a loader while the open search is in flight', () => {
     vi.stubGlobal(
       'fetch',

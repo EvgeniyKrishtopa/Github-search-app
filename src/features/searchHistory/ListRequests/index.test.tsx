@@ -29,14 +29,26 @@ describe('ListRequests', () => {
       },
     });
 
-    const { getByText, container } = renderWithProviders(<ListRequests />, {
-      store,
-    });
+    const { getByText, getByRole, container } = renderWithProviders(
+      <ListRequests />,
+      { store },
+    );
 
     expect(getByText('react')).toBeInTheDocument();
     expect(getByText('vue')).toBeInTheDocument();
-    // Single-open: exactly one item carries the global `isOpen` class.
-    expect(container.querySelectorAll('.isOpen')).toHaveLength(1);
+    // Single-open, on the right item: the openId session's header reports
+    // expanded and the collapsed one reports collapsed (identity, not a count).
+    expect(getByRole('button', { name: /vue/i })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+    expect(getByRole('button', { name: /react/i })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+    expect(
+      container.querySelectorAll('[aria-expanded="true"]'),
+    ).toHaveLength(1);
     // Only the expanded session issues a request; the collapsed one does not.
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
     expect(new URL(fetchMock.mock.calls[0][0].url).searchParams.get('q')).toBe(

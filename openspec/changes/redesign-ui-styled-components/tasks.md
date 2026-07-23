@@ -30,11 +30,11 @@
 
 ## 4. Migrate history components (AccordionItem, Form, ListRequests)  <!-- isolated -->
 
-- [ ] 4.1 Convert `features/searchHistory/AccordionItem` to styled-components (glass card, chevron affordance, two-column results grid); use a sibling `styles.ts` if it keeps `index.tsx` focused; delete its `styles.module.scss`
-- [ ] 4.2 Convert `features/searchHistory/Form` to styled-components (glass input + outlined accent button, focus/hover states); delete its `styles.module.scss`
-- [ ] 4.3 Convert `features/searchHistory/ListRequests` to styled-components with a `REQUEST HISTORY` mono section label; delete its `styles.module.scss`
-- [ ] 4.4 Update these components' tests to query by role/text instead of `styles.*` classes; keep behavior assertions (submit dispatches, single-open toggle, per-item loading/error) intact
-- [ ] 4.5 Verify: `yarn typecheck && yarn lint && yarn test:run` green
+- [x] 4.1 Convert `features/searchHistory/AccordionItem` to styled-components (glass card, chevron affordance, two-column results grid); use a sibling `styles.ts` if it keeps `index.tsx` focused; delete its `styles.module.scss`
+- [x] 4.2 Convert `features/searchHistory/Form` to styled-components (glass input + outlined accent button, focus/hover states); delete its `styles.module.scss`
+- [x] 4.3 Convert `features/searchHistory/ListRequests` to styled-components with a `REQUEST HISTORY` mono section label; delete its `styles.module.scss`
+- [x] 4.4 Update these components' tests to query by role/text instead of `styles.*` classes; keep behavior assertions (submit dispatches, single-open toggle, per-item loading/error) intact
+- [x] 4.5 Verify: `yarn typecheck && yarn lint && yarn test:run` green
 
 ## 5. Migrate shell (Header + SearchPage hero)  <!-- judgement-heavy -->
 
