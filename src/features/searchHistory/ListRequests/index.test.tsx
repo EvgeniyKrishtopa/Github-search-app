@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, waitFor } from '@testing-library/react';
-import { Provider } from 'react-redux';
+import { waitFor } from '@testing-library/react';
 import { setupStore } from 'app/store';
+import { renderWithProviders } from 'testUtils';
 import ListRequests from './index';
 
 describe('ListRequests', () => {
@@ -10,11 +10,7 @@ describe('ListRequests', () => {
   });
 
   it('renders nothing when there is no history', () => {
-    const { container } = render(
-      <Provider store={setupStore()}>
-        <ListRequests />
-      </Provider>,
-    );
+    const { container } = renderWithProviders(<ListRequests />);
 
     expect(container).toBeEmptyDOMElement();
   });
@@ -33,16 +29,26 @@ describe('ListRequests', () => {
       },
     });
 
-    const { getByText, container } = render(
-      <Provider store={store}>
-        <ListRequests />
-      </Provider>,
+    const { getByText, getByRole, container } = renderWithProviders(
+      <ListRequests />,
+      { store },
     );
 
     expect(getByText('react')).toBeInTheDocument();
     expect(getByText('vue')).toBeInTheDocument();
-    // Single-open: exactly one item carries the global `isOpen` class.
-    expect(container.querySelectorAll('.isOpen')).toHaveLength(1);
+    // Single-open, on the right item: the openId session's header reports
+    // expanded and the collapsed one reports collapsed (identity, not a count).
+    expect(getByRole('button', { name: /vue/i })).toHaveAttribute(
+      'aria-expanded',
+      'true',
+    );
+    expect(getByRole('button', { name: /react/i })).toHaveAttribute(
+      'aria-expanded',
+      'false',
+    );
+    expect(
+      container.querySelectorAll('[aria-expanded="true"]'),
+    ).toHaveLength(1);
     // Only the expanded session issues a request; the collapsed one does not.
     await waitFor(() => expect(fetchMock).toHaveBeenCalledTimes(1));
     expect(new URL(fetchMock.mock.calls[0][0].url).searchParams.get('q')).toBe(

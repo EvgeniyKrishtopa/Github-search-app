@@ -4,7 +4,17 @@ import { useAppDispatch } from 'app/hooks';
 import { useSearchReposQuery } from 'app/githubApi';
 import Repository from 'features/searchHistory/Repository';
 import Loader from 'components/Loader';
-import styles from './styles.module.scss';
+import {
+  Card,
+  HeaderButton,
+  RequestLabel,
+  RequestTitle,
+  Chevron,
+  Body,
+  ReposGrid,
+  Message,
+  ErrorMessage,
+} from './styles';
 
 interface AccordionItemProps {
   id: number;
@@ -29,35 +39,38 @@ const AccordionItem: React.FC<AccordionItemProps> = ({ id, query, isOpen }) => {
     }
     if (isError) {
       return (
-        <p className="warning">
+        <ErrorMessage>
           Couldn&apos;t load repositories. Try searching again.
-        </p>
+        </ErrorMessage>
       );
     }
     if (repos && repos.length > 0) {
       return (
-        <ul className={styles.repos}>
+        <ReposGrid>
           {repos.map(({ id: repoId, name, html_url }) => (
             <li key={repoId}>
               <Repository name={name} url={html_url} />
             </li>
           ))}
-        </ul>
+        </ReposGrid>
       );
     }
-    return <p>This request does not have any repos!</p>;
+    return <Message>This request does not have any repos!</Message>;
   };
 
   return (
-    <div className={`${styles.accrodionItem} ${isOpen ? 'isOpen' : ''}`}>
-      <div className={styles.accrodionItemHeader}>
+    <Card>
+      <HeaderButton type="button" onClick={toggle} aria-expanded={isOpen}>
         <span>
-          Request: <strong className={styles.requestTitle}>{query}</strong>
+          <RequestLabel>Request: </RequestLabel>
+          <RequestTitle>{query}</RequestTitle>
         </span>
-        <button className={styles.iconItem} onClick={toggle}></button>
-      </div>
-      <div className={styles.accrodionItemBody}>{renderBody()}</div>
-    </div>
+        <Chevron $isOpen={isOpen} aria-hidden="true">
+          ▾
+        </Chevron>
+      </HeaderButton>
+      {isOpen && <Body>{renderBody()}</Body>}
+    </Card>
   );
 };
 
