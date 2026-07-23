@@ -38,10 +38,10 @@
 
 ## 5. Migrate shell (Header + SearchPage hero)  <!-- judgement-heavy -->
 
-- [ ] 5.1 Convert `components/Header` to styled-components (`</>` mono logo, `REPO SEARCH` label, `v2.0` tag) and compose `<ThemeToggle/>` beside `v2.0`, keeping Header **dumb** (no store access of its own); delete its `styles.module.scss`
-- [ ] 5.2 Convert `pages/SearchPage` to styled-components and add the centered hero ("Find any repository, instantly." + subtitle) above the `Form`; delete its `styles.module.scss`
-- [ ] 5.3 Update Header/SearchPage tests (hero heading present, Header renders the toggle) to query by role/text
-- [ ] 5.4 Verify: `yarn typecheck && yarn lint && yarn test:run` green
+- [x] 5.1 Convert `components/Header` to styled-components (`</>` mono logo, `REPO SEARCH` label, `v2.0` tag) and compose `<ThemeToggle/>` beside `v2.0`, keeping Header **dumb** (no store access of its own); delete its `styles.module.scss`
+- [x] 5.2 Convert `pages/SearchPage` to styled-components and add the centered hero ("Find any repository, instantly." + subtitle) above the `Form`; delete its `styles.module.scss`
+- [x] 5.3 Update Header/SearchPage tests (hero heading present, Header renders the toggle) to query by role/text
+- [x] 5.4 Verify: `yarn typecheck && yarn lint && yarn test:run` green
 
 ## 6. Remove the old styling system  <!-- isolated -->
 

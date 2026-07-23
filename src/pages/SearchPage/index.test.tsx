@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { fireEvent, waitFor } from '@testing-library/react';
+import { fireEvent, waitFor, screen } from '@testing-library/react';
 import { setupStore } from 'app/store';
 import { renderWithProviders } from 'testUtils';
 import SearchPage from './index';
@@ -9,6 +9,26 @@ const jsonResponse = (items: Array<Record<string, unknown>>) =>
     status: 200,
     headers: { 'content-type': 'application/json' },
   });
+
+describe('SearchPage', () => {
+  it('renders the hero heading above the search form', () => {
+    renderWithProviders(<SearchPage />);
+
+    const heading = screen.getByRole('heading', {
+      name: /find any repository, instantly\./i,
+    });
+    const input = screen.getByPlaceholderText('Get repository');
+
+    expect(heading).toBeInTheDocument();
+    // Guard the layout the test name claims: the hero precedes the form in DOM
+    // order. DOCUMENT_POSITION_FOLLOWING (0b100) is set when `input` follows
+    // `heading`.
+    expect(
+      heading.compareDocumentPosition(input) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+});
 
 describe('SearchPage integration', () => {
   afterEach(() => {
