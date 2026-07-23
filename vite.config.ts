@@ -16,13 +16,6 @@ export default defineConfig({
   build: {
     outDir: 'dist',
   },
-  css: {
-    preprocessorOptions: {
-      scss: {
-        loadPaths: ['src'],
-      },
-    },
-  },
   test: {
     environment: 'jsdom',
     setupFiles: ['./src/setupTests.ts'],

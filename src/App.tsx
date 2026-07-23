@@ -1,8 +1,4 @@
 import React from 'react';
-// normalize.css + common.scss stay until Group 6: unmigrated components still
-// use the global .container/.row/.warning utility classes until they're ported.
-import 'normalize.css';
-import 'styles/common.scss';
 import { Provider } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
 import store from 'app/store';
