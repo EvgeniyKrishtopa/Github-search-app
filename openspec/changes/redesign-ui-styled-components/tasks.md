@@ -52,5 +52,5 @@
 
 ## 7. Documentation  <!-- isolated -->
 
-- [ ] 7.1 Update `CLAUDE.md`: change the "File pattern" convention from `styles.module.scss` to styled-components + `app/theme/`, and record `features/theming/` as a second feature alongside `features/searchHistory/`
-- [ ] 7.2 Update `README` to reflect the styled-components styling stack and the light/dark theme feature
+- [x] 7.1 Update `CLAUDE.md`: change the "File pattern" convention from `styles.module.scss` to styled-components + `app/theme/`, and record `features/theming/` as a second feature alongside `features/searchHistory/`
+- [x] 7.2 Update `README` to reflect the styled-components styling stack and the light/dark theme feature

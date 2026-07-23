@@ -11,6 +11,7 @@ A single-page app to search the GitHub repositories API and keep a rolling histo
 - Single-open accordion — expanding one session collapses the others.
 - Per-session loading and error states — only the open session fetches.
 - History persists across reloads (queries only); restored sessions start collapsed, so nothing fetches on load until you expand a session.
+- Light/dark theme toggle in the header — defaults to the OS `prefers-color-scheme`, then persists your choice across reloads.
 
 ## Tech Stack
 
@@ -18,7 +19,7 @@ A single-page app to search the GitHub repositories API and keep a rolling histo
 - **Redux Toolkit 2** — [RTK Query](https://redux-toolkit.js.org/rtk-query/overview) for server state, a domain slice for history
 - **react-redux 9**
 - **Vite 8** — dev server and build
-- **Sass** (CSS Modules)
+- **styled-components 6** — typed `DefaultTheme`, light/dark palettes, `createGlobalStyle` reset
 - **Vitest** + **React Testing Library** — tests, with V8 coverage
 - **ESLint 9** (flat config) + **Prettier 3**
 - Deployed to **GitHub Pages** via `gh-pages`
@@ -58,10 +59,11 @@ State is split by concern across three layers:
 - **Server state — RTK Query** (`src/app/githubApi.ts`): one `searchRepos({ id, q })` endpoint hits the GitHub search API and owns the request lifecycle, caching, and dedup. The cache keys per session `id`, not per query text.
 - **Domain state — `searchHistory` slice** (`src/features/searchHistory/searchHistorySlice.ts`): holds the list of sessions (`{ id, query }`) and which one is open. Adds sessions, caps history at 5, and enforces single-open toggling.
 - **Persistence — listener middleware** (`src/app/listenerMiddleware.ts`): writes queries to `localStorage` on new searches; hydration happens once at store creation via `preloadedState`.
+- **Theme state — `theming` slice** (`src/features/theming/themeSlice.ts`): holds `mode: 'dark' | 'light'` with a single `toggleTheme` reducer. Defaults to persisted `localStorage` choice → OS `prefers-color-scheme` → `dark`, resolved once at store creation, and persists on toggle via the same listener-middleware pattern as history (a separate `localStorage` key).
 
-Component flow: `App` → `Header` + `SearchPage` → `Form` (input + dispatch) and `ListRequests` (history) → `AccordionItem` (per session, subscribes + toggles) → `Repository` (per repo).
+Component flow: `App` mounts a `ThemedApp` wrapper (reads the theme mode, provides the active palette via `<ThemeProvider>` + `<GlobalStyle>`) around `Header` + `SearchPage` → `Form` (input + dispatch) and `ListRequests` (history) → `AccordionItem` (per session, subscribes + toggles) → `Repository` (per repo). `Header` composes the connected `ThemeToggle` while staying presentational.
 
-Imports are absolute from `src` (e.g. `import Form from 'features/searchHistory/Form'`). Each component is a folder with `index.tsx` + `styles.module.scss`.
+Imports are absolute from `src` (e.g. `import Form from 'features/searchHistory/Form'`). Each component is a folder with `index.tsx` and co-located styled-components (inline, or a sibling `styles.ts` for larger components); theme tokens live in `src/app/theme/`.
 
 > For the full architecture, conventions, and state-flow reference, see [`CLAUDE.md`](./CLAUDE.md).
 
@@ -73,17 +75,24 @@ src/
 │   ├── store.ts            # configureStore + localStorage hydration
 │   ├── hooks.ts            # typed useAppSelector / useAppDispatch
 │   ├── githubApi.ts        # RTK Query service (server state)
-│   └── listenerMiddleware.ts  # localStorage persistence
-├── features/searchHistory/ # domain slice + its UI
-│   ├── searchHistorySlice.ts
-│   ├── Form/               # search input + dispatch
-│   ├── ListRequests/       # history list
-│   ├── AccordionItem/      # per-session subscribe + toggle
-│   └── Repository/         # per-repo card
-├── components/             # shared dumb UI (Header, Loader)
-├── pages/SearchPage/       # route composition
-├── styles/                 # global styles + variables
-└── typings/interfaces.ts   # shared types (e.g. IGitHubRepo)
+│   ├── listenerMiddleware.ts  # localStorage persistence
+│   └── theme/               # styling infrastructure (no Redux)
+│       ├── palettes.ts      # typed dark + light DefaultTheme
+│       ├── styled.d.ts      # DefaultTheme module augmentation
+│       └── GlobalStyle.ts   # createGlobalStyle reset
+├── features/
+│   ├── searchHistory/       # domain slice + its UI
+│   │   ├── searchHistorySlice.ts
+│   │   ├── Form/            # search input + dispatch
+│   │   ├── ListRequests/    # history list
+│   │   ├── AccordionItem/   # per-session subscribe + toggle
+│   │   └── Repository/      # per-repo card
+│   └── theming/              # theme slice + its UI
+│       ├── themeSlice.ts    # mode: 'dark' | 'light', toggleTheme
+│       └── ThemeToggle/     # connected header toggle
+├── components/              # shared dumb UI (Header, Loader)
+├── pages/SearchPage/        # route composition
+└── typings/interfaces.ts    # shared types (e.g. IGitHubRepo)
 ```
 
 ## Testing
