@@ -31,8 +31,6 @@
       "Bash(git pull --ff-only:*)",
       "Bash(git ls-remote:*)",
       "Bash(gh pr create:*)",
-      "Write",
-      "Edit",
       "Write(./.claude/docs/**)",
       "Edit(./.claude/docs/**)",
       "Write(./.claude/skills/**)",
@@ -57,7 +55,7 @@
       "Read(./.env.*)"
     ],
     "additionalDirectories": [
-      "/Users/eugenekrishtopa/Desktop/AI-assisted projects/Github-search-app/.claude/skills"
+      "./.claude/skills"
     ]
   },
   "hooks": {
