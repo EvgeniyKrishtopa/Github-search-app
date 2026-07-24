@@ -109,7 +109,7 @@ but the CLI is useful for inspection and health checks.
 1. `/opsx-propose-review` — propose the change (runs architecture + spec gates).
 2. `/opsx-apply-git` — implement the next run: a batch of consecutive `isolated` groups auto-run to one PR, or a single `judgement-heavy` group with you in the loop. Auto-commits each group when green, pushes, opens one PR into the parent.
 3. `/verify` (and `/run` or `/web-qa` for UI) — confirm it actually works.
-4. `/code-review` → `/test-coverage` → `/harness-review` — the gate sequence before each group's commit.
+4. `/web-qa` (last group only) → `/code-review` → `/test-coverage` → `/harness-review` — the gate sequence before each group's commit.
 5. You merge each run's PR on GitHub; the next `/opsx-apply-git` re-syncs the parent from that merge before starting the next run.
 6. On the last group, `/opsx-apply-git` archives the change (`openspec archive`) via its own PR stacked on that run's PR.
 
