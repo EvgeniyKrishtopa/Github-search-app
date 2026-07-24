@@ -1,5 +1,6 @@
 import { createListenerMiddleware } from '@reduxjs/toolkit';
 import { addSession } from 'features/searchHistory/searchHistorySlice';
+import { toggleTheme } from 'features/theming/themeSlice';
 import type { RootState } from './store';
 
 export const listenerMiddleware = createListenerMiddleware();
@@ -12,5 +13,16 @@ listenerMiddleware.startListening({
   effect: (_action, listenerApi) => {
     const { entries } = (listenerApi.getState() as RootState).searchHistory;
     localStorage.setItem('sessions', JSON.stringify(entries));
+  },
+});
+
+// Persist the theme choice under its own key on every toggle, independent of
+// the search-history rule above (design D2). The key is distinct so theme
+// persistence never disturbs stored search history.
+listenerMiddleware.startListening({
+  actionCreator: toggleTheme,
+  effect: (_action, listenerApi) => {
+    const { mode } = (listenerApi.getState() as RootState).theme;
+    localStorage.setItem('theme-mode', mode);
   },
 });

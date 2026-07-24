@@ -1,7 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest';
-import { render, fireEvent, waitFor } from '@testing-library/react';
-import { Provider } from 'react-redux';
+import { fireEvent, waitFor, screen } from '@testing-library/react';
 import { setupStore } from 'app/store';
+import { renderWithProviders } from 'testUtils';
 import SearchPage from './index';
 
 const jsonResponse = (items: Array<Record<string, unknown>>) =>
@@ -9,6 +9,26 @@ const jsonResponse = (items: Array<Record<string, unknown>>) =>
     status: 200,
     headers: { 'content-type': 'application/json' },
   });
+
+describe('SearchPage', () => {
+  it('renders the hero heading above the search form', () => {
+    renderWithProviders(<SearchPage />);
+
+    const heading = screen.getByRole('heading', {
+      name: /find any repository, instantly\./i,
+    });
+    const input = screen.getByPlaceholderText('Get repository');
+
+    expect(heading).toBeInTheDocument();
+    // Guard the layout the test name claims: the hero precedes the form in DOM
+    // order. DOCUMENT_POSITION_FOLLOWING (0b100) is set when `input` follows
+    // `heading`.
+    expect(
+      heading.compareDocumentPosition(input) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
+  });
+});
 
 describe('SearchPage integration', () => {
   afterEach(() => {
@@ -23,10 +43,9 @@ describe('SearchPage integration', () => {
     vi.stubGlobal('fetch', fetchMock);
     const store = setupStore();
 
-    const { getByPlaceholderText, getByText, container } = render(
-      <Provider store={store}>
-        <SearchPage />
-      </Provider>,
+    const { getByPlaceholderText, getByText, container } = renderWithProviders(
+      <SearchPage />,
+      { store },
     );
 
     // Submit a search — a session is created, opened, and fetches live.
@@ -42,20 +61,20 @@ describe('SearchPage integration', () => {
     });
     expect(fetchMock).toHaveBeenCalledTimes(1);
     expect(store.getState().searchHistory.entries).toHaveLength(1);
-    expect(container.querySelector('.isOpen')).not.toBeNull();
+    expect(container.querySelector('[aria-expanded="true"]')).not.toBeNull();
 
-    // buttons: [0] the form's submit, [1] the accordion toggle.
+    // buttons: [0] the form's submit, [1] the accordion disclosure header.
     const toggle = () =>
       fireEvent.click(container.querySelectorAll('button')[1]);
 
     // Collapse the session, then re-expand it within the cache window.
     toggle();
     await waitFor(() =>
-      expect(container.querySelector('.isOpen')).toBeNull(),
+      expect(container.querySelector('[aria-expanded="true"]')).toBeNull(),
     );
     toggle();
     await waitFor(() =>
-      expect(container.querySelector('.isOpen')).not.toBeNull(),
+      expect(container.querySelector('[aria-expanded="true"]')).not.toBeNull(),
     );
 
     // Re-expanding served from cache — no second request was issued.

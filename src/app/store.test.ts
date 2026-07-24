@@ -1,8 +1,55 @@
-import { describe, it, expect, beforeEach } from 'vitest';
-import { loadHistory, setupStore } from './store';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { loadHistory, loadThemeMode, setupStore } from './store';
+import { createMatchMedia } from 'testUtils';
 
 beforeEach(() => {
   localStorage.clear();
+});
+
+describe('loadThemeMode', () => {
+  const original = window.matchMedia;
+  // setupTests installs a default (matches: false) stub; restore it afterwards
+  // so nothing leaks into later tests.
+  afterEach(() => {
+    window.matchMedia = original;
+  });
+
+  it('prefers a persisted choice over the OS preference', () => {
+    localStorage.setItem('theme-mode', 'light');
+    window.matchMedia = createMatchMedia(false); // OS reports dark
+    expect(loadThemeMode()).toBe('light');
+  });
+
+  it('ignores a malformed persisted value and falls through to the OS', () => {
+    // OS prefers light: proves the malformed value is rejected and the code
+    // re-checks matchMedia, rather than short-circuiting to the 'dark' default
+    // (which would pass even for a broken fallthrough).
+    localStorage.setItem('theme-mode', 'sepia');
+    window.matchMedia = createMatchMedia(true);
+    expect(loadThemeMode()).toBe('light');
+  });
+
+  it('resolves to dark when no choice is persisted and the OS prefers dark', () => {
+    window.matchMedia = createMatchMedia(false);
+    expect(loadThemeMode()).toBe('dark');
+  });
+
+  it('resolves to light when no choice is persisted and the OS prefers light', () => {
+    window.matchMedia = createMatchMedia(true);
+    expect(loadThemeMode()).toBe('light');
+  });
+
+  it('falls back to dark when matchMedia is unavailable', () => {
+    window.matchMedia = undefined as unknown as typeof window.matchMedia;
+    expect(loadThemeMode()).toBe('dark');
+  });
+
+  it('falls back to dark when matchMedia throws', () => {
+    window.matchMedia = vi.fn(() => {
+      throw new Error('blocked');
+    }) as unknown as typeof window.matchMedia;
+    expect(loadThemeMode()).toBe('dark');
+  });
 });
 
 describe('loadHistory', () => {

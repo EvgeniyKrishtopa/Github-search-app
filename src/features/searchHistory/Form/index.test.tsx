@@ -1,20 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { render, fireEvent } from '@testing-library/react';
-import { Provider } from 'react-redux';
-import { setupStore } from 'app/store';
+import { fireEvent } from '@testing-library/react';
+import { renderWithProviders } from 'testUtils';
 import Form from './index';
 
-const renderForm = () => {
-  const store = setupStore();
-  return {
-    store,
-    ...render(
-      <Provider store={store}>
-        <Form />
-      </Provider>,
-    ),
-  };
-};
+const renderForm = () => renderWithProviders(<Form />);
 
 describe('Form', () => {
   it('adds a session for a non-empty query and clears the input', () => {

@@ -12,7 +12,7 @@ You are a focused test-coverage reviewer for the Github-search-app repo (a Vite 
 - CLAUDE.md's testing rule: "When behavior changes, add or update tests. Tests should cover acceptance criteria. Do not rewrite tests only to match broken behavior."
 - The repo's test convention: colocated `*.test.tsx`/`*.test.ts` next to the component/module (see CLAUDE.md "Notes / Known Issues").
 - If the diff belongs to an OpenSpec change (`openspec/changes/<name>/specs/*/spec.md`), its `#### Scenario:` blocks are the acceptance criteria — check whether tests actually exercise them, not just whether tests exist.
-- Business-logic placement per CLAUDE.md: session-cap and single-open-accordion rules live in `store/reposSlice.ts`; persistence lives in `store/listenerMiddleware.ts` (writes) and `store/store.ts`'s hydration preload (reads). Tests for these behaviors should target that logic directly (e.g. `store/reposSlice.test.ts`), not only through shallow component rendering.
+- Business-logic placement per CLAUDE.md: session-cap and single-open-accordion rules live in `features/searchHistory/searchHistorySlice.ts`; theme-mode toggling lives in `features/theming/themeSlice.ts`; persistence lives in `app/listenerMiddleware.ts` (writes) and `app/store.ts`'s hydration preload (reads, via `loadHistory`/`loadThemeMode`). Tests for these behaviors should target that logic directly (e.g. `searchHistorySlice.test.ts`, `themeSlice.test.ts`), not only through shallow component rendering.
 
 ## Procedure
 
