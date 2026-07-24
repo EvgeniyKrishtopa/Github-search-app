@@ -32,7 +32,7 @@ GitHub Actions workflows live in `.github/workflows/`:
 
 **Required vs. advisory**: on pull requests targeting `main`, `typecheck`/`lint`/`test-coverage` are required status checks and a CodeQL code-scanning rule blocks on high-or-higher security alerts / error-level alerts (enforced via a GitHub repo ruleset) — warning-level or lower-severity alerts don't block. On pull requests targeting any other branch, the same checks run and report, but nothing enforces blocking.
 
-**Known gap**: the actual default branch (`main`) still predates this toolchain (pre-Vite/Redux-Toolkit/React 19/ESLint 9), so `cd.yml` doesn't exist there yet and its `workflow_run` trigger cannot register — GitHub only evaluates that trigger from the default branch's copy of the workflow file. CI-side behavior is verified live; the CD deploy trigger itself won't be exercised until this repo's modernization work lands on `main`, a separate decision outside this pipeline's scope.
+**First-run caveat**: `main` had no CI/CD workflows at all before the `feature/modernize-2026` → `main` merge (v2.0.0) — `ci.yml`/`cd.yml` are new. GitHub only evaluates a `workflow_run` trigger from the default branch's copy of the workflow file, so `cd.yml`'s trigger cannot register until that merge lands; the merge PR is therefore the first time the deploy trigger fires for real. Treat that first run as one to watch, not one to assume green — verify the Actions run and the resulting GitHub Pages content once it completes.
 
 ## Architecture
 

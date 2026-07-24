@@ -4,6 +4,12 @@ A single-page app to search the GitHub repositories API and keep a rolling histo
 
 **Live demo:** https://evgeniykrishtopa.github.io/Github-search-app/
 
+> **v2.0 — full rewrite.** This codebase replaces the original 2020
+> create-react-app version end to end: build tooling (Vite), state
+> architecture (RTK Query + domain slices), styling (styled-components +
+> theming), and a from-scratch CI/CD pipeline. See [`CHANGELOG.md`](./CHANGELOG.md)
+> for the complete list of what changed.
+
 ## Features
 
 - Search public GitHub repositories (top 8 results per query).
@@ -117,3 +123,8 @@ The app deploys to GitHub Pages. The base path is set via Vite's `base` config i
 ```bash
 yarn deploy
 ```
+
+## Changelog
+
+See [`CHANGELOG.md`](./CHANGELOG.md) for release history, starting with the
+`2.0.0` rewrite.
