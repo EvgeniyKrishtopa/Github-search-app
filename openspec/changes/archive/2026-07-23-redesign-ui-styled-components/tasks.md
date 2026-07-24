@@ -45,12 +45,12 @@
 
 ## 6. Remove the old styling system  <!-- isolated -->
 
-- [ ] 6.1 Confirm no `styles.module.scss` remain under `src/`; remove `src/styles/*.scss` (migrated into `GlobalStyle`/theme) and the `normalize.css` import
-- [ ] 6.2 Remove `sass` and `normalize.css` from `package.json` and any sass-specific config from `vite.config.ts`
-- [ ] 6.3 Grep the suite for any remaining class-based/`.module.scss` assertions and migrate them to role/text/`data-testid`
-- [ ] 6.4 Full verification: `yarn typecheck && yarn lint && yarn test:coverage` green (90% floor holds), and `yarn build` succeeds under the `/Github-search-app/` base path
+- [x] 6.1 Confirm no `styles.module.scss` remain under `src/`; remove `src/styles/*.scss` (migrated into `GlobalStyle`/theme) and the `normalize.css` import
+- [x] 6.2 Remove `sass` and `normalize.css` from `package.json` and any sass-specific config from `vite.config.ts`
+- [x] 6.3 Grep the suite for any remaining class-based/`.module.scss` assertions and migrate them to role/text/`data-testid`
+- [x] 6.4 Full verification: `yarn typecheck && yarn lint && yarn test:coverage` green (90% floor holds), and `yarn build` succeeds under the `/Github-search-app/` base path
 
 ## 7. Documentation  <!-- isolated -->
 
-- [ ] 7.1 Update `CLAUDE.md`: change the "File pattern" convention from `styles.module.scss` to styled-components + `app/theme/`, and record `features/theming/` as a second feature alongside `features/searchHistory/`
-- [ ] 7.2 Update `README` to reflect the styled-components styling stack and the light/dark theme feature
+- [x] 7.1 Update `CLAUDE.md`: change the "File pattern" convention from `styles.module.scss` to styled-components + `app/theme/`, and record `features/theming/` as a second feature alongside `features/searchHistory/`
+- [x] 7.2 Update `README` to reflect the styled-components styling stack and the light/dark theme feature

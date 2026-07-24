@@ -8,7 +8,7 @@ Run a manual browser QA pass using the `web-qa-manual-tester` subagent (`.claude
 ## 1. Determine which flows to test
 
 - If the user named specific flow(s) (e.g. "run a QA pass on search"), use those.
-- Otherwise, infer affected flows from the current diff: run `git status --porcelain` and `git diff --stat` (staged + unstaged; fall back to `git diff main...HEAD` if the working tree is clean) and map the changed files to user-facing flows using CLAUDE.md's component layers (e.g. changes under `components/Form` → the search flow; `components/ListRequests`/`AccordionItem` → the history/accordion flow).
+- Otherwise, infer affected flows from the current diff: run `git status --porcelain` and `git diff --stat` (staged + unstaged; fall back to `git diff main...HEAD` if the working tree is clean) and map the changed files to user-facing flows using CLAUDE.md's component layers (e.g. changes under `features/searchHistory/Form` → the search flow; `features/searchHistory/ListRequests`/`AccordionItem` → the history/accordion flow; `features/theming/ThemeToggle` → the theme-toggle flow — toggle switches mode, persists across reload).
 - If nothing changed and no flow was named, ask the user which flow to test rather than guessing.
 
 Keep the flow list to what's actually affected — do not run a full regression pass across the whole app for a change that touched one component, unless the user asked for that explicitly.
