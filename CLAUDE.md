@@ -13,7 +13,7 @@ Package manager is **yarn** (see `yarn.lock`). Built on Vite (`vite`, `@vitejs/p
   - Run a single test file: `yarn test src/path/File.test.tsx`
   - CI / single run: `yarn test:run` (or `yarn test:coverage` for coverage)
 - `yarn deploy` — builds then publishes `dist/` to GitHub Pages via `gh-pages` (base path is set via Vite's `base` config in `vite.config.ts`, not a `homepage` field)
-- `yarn lint` — ESLint 9 flat config (`eslint.config.mjs`)
+- `yarn lint` — ESLint 10 flat config (`eslint.config.mjs`)
 - `yarn typecheck` — `tsc --noEmit`
 - `yarn format` — Prettier 3, writing in place
 
